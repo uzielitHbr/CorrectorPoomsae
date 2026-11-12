@@ -51,4 +51,33 @@
     <string name="MSG_VIDEO_CANCEL">Análisis cancelado.</string>
     <string name="MSG_DELETE_ALL">Se borrarán todas tus prácticas y datos de esta app. Esta acción no se puede deshacer.</string>
     <string name="MSG_DISCLAIMER">La puntuación es orientativa y no es una calificación oficial.</string>
+
+    <!-- Retroalimentación Técnica Específica (Sección 12.8 / F7) -->
+    <string name="FB_STANCE_STEP_TOO_SHORT">Alarga un poco más tu paso.</string>
+    <string name="FB_STANCE_STEP_TOO_LONG">Acorta la distancia entre tus pies.</string>
+    <string name="FB_STANCE_FEET_TOO_NARROW">Separa más los pies a lo ancho de tus hombros.</string>
+    <string name="FB_STANCE_FEET_TOO_WIDE">Junta un poco los pies a lo ancho.</string>
+    <string name="FB_FRONT_KNEE_INSUFFICIENT_BEND">Flexiona un poco más la rodilla delantera.</string>
+    <string name="FB_FRONT_KNEE_OVERBENT">No flexiones tanto la rodilla delantera.</string>
+    <string name="FB_REAR_KNEE_NOT_EXTENDED">Mantén la pierna trasera completamente estirada.</string>
+    <string name="FB_TORSO_NOT_UPRIGHT">Mantén la espalda recta y el torso vertical.</string>
+    <string name="FB_HIP_SWAY_EXCESSIVE">Estabiliza tus caderas durante el movimiento.</string>
+    <string name="FB_ELBOW_OVERFLEXED">No flexiones tanto el codo.</string>
+    <string name="FB_ELBOW_OVEREXTENDED">Evita hiperextender el codo por completo.</string>
+    <string name="FB_PUNCH_ARM_NOT_EXTENDED">Extiende más el brazo del puñetazo.</string>
+    <string name="FB_WRIST_TOO_LOW">Sube la altura de tu muñeca.</string>
+    <string name="FB_WRIST_TOO_HIGH">Baja un poco la altura de tu muñeca.</string>
+    <string name="FB_WRIST_LATERAL_OFFSET_INCORRECT">Alinea el bloqueo al ancho de tu muslo.</string>
+    <string name="FB_PUNCH_NOT_FORWARD_ENOUGH">Lanza el puño con mayor proyección hacia el frente.</string>
+    <string name="FB_PUNCH_OFF_TARGET_HORIZONTAL">Dirige el puño hacia el centro de tu pecho.</string>
+    <string name="FB_FOREARM_INCLINATION_INCORRECT">Alinea el antebrazo verticalmente.</string>
+    <string name="FB_FIST_NOT_AT_SHOULDER_HEIGHT">Coloca el puño a la altura de tu hombro.</string>
+    <string name="FB_BLOCK_WRIST_BELOW_HEAD">Eleva el bloqueo un puño por encima de tu cabeza.</string>
+    <string name="FB_KICK_KNEE_NOT_HIGH_ENOUGH">Eleva más la rodilla antes de patear.</string>
+    <string name="FB_KICK_HEIGHT_TOO_LOW">Patea a mayor altura con el empeine o metatarso.</string>
+    <string name="FB_KICK_LEG_NOT_EXTENDED">Extiende la pierna de pateo en el punto más alto.</string>
+    <string name="FB_SUPPORT_KNEE_BENT">Mantén firme la pierna de apoyo.</string>
+    <string name="FB_KICK_NOT_FORWARD">Dirige la patada recta hacia el frente.</string>
+    <string name="FB_TURN_ANGLE_INACCURATE">Ajusta el ángulo del giro hacia la dirección correcta.</string>
+    <string name="FB_HEADING_DRIFT_EXCESSIVE">Corrige la orientación de tu cuerpo hacia el frente de la forma.</string>
 </resources>
