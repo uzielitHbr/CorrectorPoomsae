@@ -2,7 +2,7 @@
 
 **Proyecto:** Taegeuk Coach  
 **Versión de especificación:** 3.0  
-**Fecha de actualización:** 11 de noviembre de 2026 (Fase F0)  
+**Fecha de actualización:** 12 de noviembre de 2026 (Fases F4 y F5)  
 
 ---
 

@@ -134,4 +134,43 @@
   - Se ajustó el umbral de `complexity > LongMethod` a 100 para permitir definiciones declarativas de pantallas Compose completas.
   - Se integró `org.jlleitschuh.gradle.ktlint` (versión 12.1.2) con tareas paraguas `ktlintCheck` y `ktlintFormat`.
 
+---
+
+## 6. Decisiones Técnicas de las Fases F4 y F5 (Cámara, Permisos y Detección de Pose)
+
+### D-F4-01: Gestión de Permisos de Cámara con Máquina de Estados Desacoplada y Navegación a Ajustes
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - El flujo de permisos se desacopló en `CameraPermissionViewModel` con una máquina de estados sellada (`CameraPermissionState`: `NotDetermined`, `RationaleRequired`, `Requesting`, `Granted`, `Denied`, `PermanentlyDenied`).
+  - Cumple estrictamente con la guía de Android y los mensajes normativos en español de México (`MSG_PERM_RATIONALE` y `MSG_PERM_SETTINGS`, Sección 12.8).
+  - Al recibir una denegación permanente ("No volver a preguntar"), la UI proporciona un acceso directo a los ajustes del sistema (`Settings.ACTION_APPLICATION_DETAILS_SETTINGS`).
+
+### D-F4-02: Estrategia de Contrapresión de CameraX (`STRATEGY_KEEP_ONLY_LATEST`) y Ejecutor Dedicado
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - En cumplimiento de la sección 12.9.1, `ImageAnalysis` se configura con `STRATEGY_KEEP_ONLY_LATEST` y formato `RGBA_8888`.
+  - La captura y análisis corren en un ejecutor dedicado de un solo hilo (`Executors.newSingleThreadExecutor()`). Nunca se ejecutan transformaciones de imagen ni inferencias en el hilo principal.
+  - La liberación de buffers de memoria gráfica (`ImageProxy.close()`) se garantiza mediante bloques `finally`.
+
+### D-F5-01: Selección del Modelo MediaPipe Pose Landmarker Lite (`pose_landmarker_lite.task`) y Licencia Apache 2.0
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - Se seleccionó la variante **Lite** (modelo en coma flotante FP16, tamaño $5.5\text{ MB}$) para optimizar latencia y consumo de batería en dispositivos móviles en tiempo real ($30\text{ fps}$).
+  - El modelo fue descargado del repositorio oficial de MediaPipe y colocado en `app/src/main/assets/pose_landmarker_lite.task`.
+  - **Licencia:** Distribuido por Google LLC bajo licencia Apache 2.0. Se registró la licencia en `app/src/main/assets/MODEL_LICENSE.txt` y en este documento.
+  - La arquitectura deja la ruta del modelo configurable en `MediaPipePoseEstimator` para permitir comparaciones futuras con variantes Full/Heavy.
+
+### D-F5-02: Adaptador Puro y Modelo de Concurrencia con Timestamps Estrictamente Crecientes (Sección 12.9.1)
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - `MediaPipePoseAdapter` es una clase pura sin dependencias de Android que mapea los resultados de MediaPipe a la entidad canónica `PoseFrame` (`image` y `world`).
+  - Mapea las 17 articulaciones requeridas por la sección 5.4, validando específicamente que `RIGHT_WRIST` corresponda al índice 16.
+  - Exige marcas de tiempo estrictamente crecientes (`timestampMs > lastTimestampMs`). Cuadros con marcas no crecientes o negativas son rechazados y contabilizados en `droppedFrames`.
+  - En la vista previa de la cámara frontal, el lienzo de Compose aplica espejado horizontal (`canvasX = (1.0 - rawX) * width`) para interacción natural, mientras que las coordenadas internas de análisis se conservan sin reflejar (Regla R-23).
+
+
 

@@ -13,6 +13,8 @@
 | **F1** | 2026-11-11 | Compilación completa (`assembleDebug`), pruebas unitarias (`testDebugUnitTest`, `:analysis:test`), análisis estático (`detekt`, `ktlintCheck`), script de CI local (`scripts/verify.sh`) | **PASS (Verde)** | 100% (Marcador base de módulo aislado) | 0 errores de compilación, 0 fallos de tests unitarios, 0 violaciones Detekt, 0 violaciones ktlint. |
 | **F2** | 2026-11-12 | Pruebas unitarias `:analysis:test` (34 tests), cobertura JaCoCo, compilación `:app` + `:analysis`, análisis estático (`detekt`, `ktlintCheck`) | **PASS (Verde)** | `geometry`: 96.03% (387/403)<br>`signal`: 98.09% (154/157)<br>`model`: 100.00% (54/54) | 34/34 tests en verde (incluye cálculos manuales de 0°, 90°, 180°, casos degenerados sin NaN, invariancia a traslación/rotación/handedness y filtros One Euro / EMA). |
 | **F3** | 2026-11-12 | Pruebas unitarias `:analysis:test` (44 tests totales, 10 nuevos de poomsae), cobertura JaCoCo, compilación `:app` + `:analysis`, análisis estático (`detekt`, `ktlintCheck`) | **PASS (Verde)** | `poomsae`: 87.57% (324/370)<br>`geometry`: 96.03%<br>`signal`: 98.09% | 1 carga canónica v2 con cierre angular (0° tras retorno), 8+ casos inválidos específicos, y cobertura de fichas 13.4 para todos los pares posición/técnica. |
+| **F4** | 2026-11-12 | Pruebas unitarias `CameraPermissionViewModelTest` (9 tests), compilación CameraX, `scripts/verify.sh`, Detekt y ktlint | **PASS (Verde)** | N/A (Módulo `:app`) | Flujo completo de permisos (explicación previa MSG_PERM_RATIONALE, solicitud, denegado permanente MSG_PERM_SETTINGS con enlace a ajustes). Pruebas en hardware registradas como Pendiente Externo. |
+| **F5** | 2026-11-12 | Pruebas unitarias `MediaPipePoseAdapterTest` (9 tests), modelo Lite en assets con licencia Apache 2.0, proyección de esqueleto Compose `PoseOverlay`, Detekt y ktlint | **PASS (Verde)** | N/A (Módulo `:app`) | Mapeo riguroso de las 17 articulaciones (RIGHT_WRIST verificado), timestamps estrictamente crecientes (Sección 12.9.1), descarte atómico de cuadros y documentación de experimentos E1, E2 y E3 en `docs/`. |
 
 ---
 
@@ -134,5 +136,49 @@
 ### Test T-F3-02: Regresión Completa y Calidad Estática
 - **Comando:** `./gradlew assembleDebug test :analysis:jacocoTestReport detekt ktlintCheck`
 - **Resultado:** BUILD SUCCESSFUL (0 errores de compilación, 0 fallos de pruebas, 0 violaciones Detekt, 0 violaciones ktlint).
+
+---
+
+## Detalle de Evidencia - Fase F4
+
+### Test T-F4-01: Pruebas Unitarias de Máquina de Estados de Permisos (`CameraPermissionViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.camera.CameraPermissionViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (9 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Estado inicial `NotDetermined`.
+  - Transición a `Granted` cuando el sistema reporta permiso existente.
+  - Transición a `RationaleRequired` cuando `shouldShowRequestPermissionRationale` es verdadero (`MSG_PERM_RATIONALE`).
+  - Transición a `Requesting` cuando el usuario pulsa solicitar permiso.
+  - Transición a `PermanentlyDenied` cuando el permiso fue rechazado y no procede rationale (`MSG_PERM_SETTINGS` y redirección a ajustes).
+  - Transición a `Denied` al descartar el diálogo.
+
+### Test T-F4-02: Integración de Casos de Uso CameraX
+- **Comando:** `./gradlew :app:assembleDebug`
+- **Resultado:** BUILD SUCCESSFUL
+- **Evidencia:** `Preview` e `ImageAnalysis` configurados con `STRATEGY_KEEP_ONLY_LATEST`, formato `RGBA_8888`, selección frontal/trasera y ejecutor dedicado de un solo hilo según la sección 12.9.1. Pruebas físicas en teléfono real registradas como Pendiente Externo.
+
+---
+
+## Detalle de Evidencia - Fase F5
+
+### Test T-F5-01: Pruebas Unitarias del Adaptador MediaPipe (`MediaPipePoseAdapterTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.pose.MediaPipePoseAdapterTest"`
+- **Resultado:** BUILD SUCCESSFUL (9 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Mapeo exacto de las 17 articulaciones canónicas en espacio de imagen (`IMAGE`) y mundo métrico (`WORLD`).
+  - Verificación explícita de `RIGHT_WRIST` mapeado al índice MediaPipe 16 según criterios de aceptación de F5.
+  - Manejo de lista vacía o nula retornando `Success(null)` (persona fuera de cuadro).
+  - Aceptación de marcas de tiempo estrictamente crecientes.
+  - Rechazo de marcas de tiempo iguales, decrecientes o negativas con `NON_INCREASING_TIMESTAMP` y `NEGATIVE_TIMESTAMP`.
+  - Rechazo de listas truncadas o coordenadas no finitas (`NaN` o `Infinity`) con `CORRUPTED_COORDINATES`.
+  - Restablecimiento del estado temporal con `reset()`.
+
+### Test T-F5-02: Verificación de Modelo Lite y Licencia en Assets
+- **Archivo:** `app/src/main/assets/pose_landmarker_lite.task` ($5.5\text{ MB}$, FP16)
+- **Licencia:** Apache 2.0 (Google LLC) registrada en `app/src/main/assets/MODEL_LICENSE.txt` y en `docs/DECISIONS.md`.
+
+### Test T-F5-03: Regresión Completa del Proyecto
+- **Comando:** `./gradlew assembleDebug test detekt ktlintCheck`
+- **Resultado:** BUILD SUCCESSFUL (64 tests unitarios totales en verde, 0 errores, 0 violaciones Detekt, 0 violaciones ktlint).
 
 

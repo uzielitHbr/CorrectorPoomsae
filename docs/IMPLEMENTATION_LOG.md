@@ -164,6 +164,32 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
   - `./gradlew :analysis:test :analysis:jacocoTestReport` (OK — 44/44 tests en `:analysis`, 10/10 en `PoomsaeLoaderTest`).
   - `./gradlew assembleDebug test :analysis:jacocoTestReport detekt ktlintCheck` (OK — 0 errores, 0 violaciones Detekt/ktlint).
 - **Decisiones pendientes:** Ninguna.
-- **Siguiente paso:** Proceder a Fase F4 (Evaluador de postura, técnicas y métricas biomecánicas 13.4).
+- **Siguiente paso:** Proceder a Fases F4 y F5 (Cámara, permisos y detección de pose con MediaPipe).
+
+---
+
+## Sesión 5 — Fases F4 y F5: Cámara, permisos y detección de pose
+- **Fecha:** 2026-11-12
+- **Objetivo:** Implementar la vista previa estable de la cámara con CameraX (`Preview` e `ImageAnalysis`), gestionar el ciclo de permisos (explicación previa, solicitud, denegado permanente), integrar MediaPipe Pose Landmarker Lite en `LIVE_STREAM` con sincronización de la sección 12.9.1 (un ejecutor dedicado, descarte concurrente de cuadros, timestamps estrictamente crecientes), adaptar los resultados a `PoseFrame` y dibujar el esqueleto en Compose con `PoseOverlay`. Documentar los experimentos E1, E2 y E3 en `docs/COORDINATES.md`, `docs/RELIABILITY.md` y `docs/PERFORMANCE.md`.
+- **Artefactos creados/modificados:**
+  - `gradle/libs.versions.toml`, `app/build.gradle.kts`, `app/src/main/AndroidManifest.xml`, `app/src/main/res/values/strings.xml`, `scripts/verify.sh`
+  - `app/src/main/assets/pose_landmarker_lite.task` (modelo oficial MediaPipe FP16, 5.5 MB) y `app/src/main/assets/MODEL_LICENSE.txt` (Apache 2.0)
+  - `app/src/main/java/tkd/apptkd/camera/CameraFacing.kt`
+  - `app/src/main/java/tkd/apptkd/camera/CameraMetrics.kt`
+  - `app/src/main/java/tkd/apptkd/camera/CameraPermissionViewModel.kt`
+  - `app/src/main/java/tkd/apptkd/camera/CameraManager.kt`
+  - `app/src/main/java/tkd/apptkd/pose/MediaPipePoseAdapter.kt`
+  - `app/src/main/java/tkd/apptkd/pose/MediaPipePoseEstimator.kt`
+  - `app/src/main/java/tkd/apptkd/ui/components/CameraPreviewView.kt`
+  - `app/src/main/java/tkd/apptkd/ui/components/PoseOverlay.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/PracticeScreen.kt`
+  - `app/src/test/java/tkd/apptkd/camera/CameraPermissionViewModelTest.kt`
+  - `app/src/test/java/tkd/apptkd/pose/MediaPipePoseAdapterTest.kt`
+  - `docs/COORDINATES.md`, `docs/RELIABILITY.md`, `docs/PERFORMANCE.md`, `docs/DECISIONS.md`, `docs/PROJECT_STATUS.md`, `docs/TEST_RESULTS.md`, `docs/ARCHITECTURE.md`, `CHANGELOG.md`
+- **Pruebas ejecutadas:**
+  - `./gradlew test` (OK — 64/64 pruebas unitarias en verde: 44 en `:analysis`, 20 en `:app`).
+  - `./gradlew assembleDebug test detekt ktlintCheck` (OK — 0 errores, 0 violaciones Detekt/ktlint, APK generado).
+- **Decisiones pendientes:** Ninguna. Pruebas físicas en teléfonos reales registradas como Pendiente Externo.
+- **Siguiente paso:** Proceder a Fase F6 (Calidad de señal, FrameQualityGate y calibración del usuario).
 
 

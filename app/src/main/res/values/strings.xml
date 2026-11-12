@@ -15,6 +15,12 @@
     <string name="btn_history">Historial</string>
     <string name="btn_settings">Ajustes</string>
     <string name="btn_back">Atrás</string>
+    <string name="btn_grant_permission">Permitir cámara</string>
+    <string name="btn_open_settings">Abrir ajustes</string>
+    <string name="btn_switch_camera">Cambiar cámara</string>
+    <string name="camera_permission_title">Permiso de cámara necesario</string>
+    <string name="camera_fps_label">FPS: %1$.1f</string>
+    <string name="camera_dropped_frames_label">Descartados: %1$d</string>
 
     <!-- Catálogo Normativo de Mensajes del Sistema (Sección 12.8, Español de México) -->
     <string name="MSG_PERM_RATIONALE">Necesitamos la cámara para ver tu postura. El video se procesa en tu teléfono y no se envía a ningún servidor.</string>

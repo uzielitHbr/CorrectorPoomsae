@@ -5,6 +5,18 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-12
+### Added
+- **Fases F4 y F5 (Cámara, permisos y detección de pose con MediaPipe):**
+  - Flujo de permisos de cámara completo y desacoplado en `CameraPermissionViewModel` (explicación previa con `MSG_PERM_RATIONALE`, solicitud y denegación permanente con `MSG_PERM_SETTINGS` y enlace directo a ajustes del sistema).
+  - Integración de CameraX con casos de uso `Preview` e `ImageAnalysis` (estrategia `STRATEGY_KEEP_ONLY_LATEST`, formato `RGBA_8888`, selección frontal/trasera y ejecutor dedicado de un solo hilo según sección 12.9.1).
+  - Modelo ligero MediaPipe Pose Landmarker Lite (`pose_landmarker_lite.task`, $5.5\text{ MB}$, FP16) en assets bajo licencia Apache 2.0 (registrada en `MODEL_LICENSE.txt` y `DECISIONS.md`).
+  - Adaptador puro `MediaPipePoseAdapter` que transforma landmarks a `PoseFrame` (`image` y `world`), exigiendo marcas de tiempo estrictamente crecientes y verificando las 17 articulaciones requeridas (`RIGHT_WRIST` en índice 16).
+  - Estimador `MediaPipePoseEstimator` en modo `LIVE_STREAM` con protección atómica contra cuadros en vuelo (`inFlight`), descarte concurrente y cálculo de FPS y cuadros descartados para depuración.
+  - Lienzo de esqueleto `PoseOverlay` en Jetpack Compose con colores diferenciados para lados izquierdo (cyan) y derecho (ámbar) y soporte de espejado en cámara frontal.
+  - Documentos técnicos de experimentos: `docs/COORDINATES.md` (Experimento E1 y E2), `docs/RELIABILITY.md` (Experimento E3) y `docs/PERFORMANCE.md` (benchmarks y presupuesto de latencia).
+  - Suite de pruebas unitarias automatizadas (`CameraPermissionViewModelTest` y `MediaPipePoseAdapterTest`), elevando el total a 64 pruebas unitarias en verde.
+
 ## [0.4.0] - 2026-11-12
 ### Added
 - **Fase F3 (Definición del poomsae):**
