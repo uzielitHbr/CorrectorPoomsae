@@ -12,6 +12,7 @@
 | **F0** | 2026-11-11 | Validación estructural y matemática del JSON (`poomsae_taegeuk1.json`), verificación de Gradle dry-run | **PASS (Verde)** | N/A (Fase documental) | Se verificaron los 18 movimientos, índices 1..18, giros válidos {-180, -90, 0, 90, 180}, técnicas cerradas, kihap único en 18 y cierre angular perfecto (0° tras giro de retorno). |
 | **F1** | 2026-11-11 | Compilación completa (`assembleDebug`), pruebas unitarias (`testDebugUnitTest`, `:analysis:test`), análisis estático (`detekt`, `ktlintCheck`), script de CI local (`scripts/verify.sh`) | **PASS (Verde)** | 100% (Marcador base de módulo aislado) | 0 errores de compilación, 0 fallos de tests unitarios, 0 violaciones Detekt, 0 violaciones ktlint. |
 | **F2** | 2026-11-12 | Pruebas unitarias `:analysis:test` (34 tests), cobertura JaCoCo, compilación `:app` + `:analysis`, análisis estático (`detekt`, `ktlintCheck`) | **PASS (Verde)** | `geometry`: 96.03% (387/403)<br>`signal`: 98.09% (154/157)<br>`model`: 100.00% (54/54) | 34/34 tests en verde (incluye cálculos manuales de 0°, 90°, 180°, casos degenerados sin NaN, invariancia a traslación/rotación/handedness y filtros One Euro / EMA). |
+| **F3** | 2026-11-12 | Pruebas unitarias `:analysis:test` (44 tests totales, 10 nuevos de poomsae), cobertura JaCoCo, compilación `:app` + `:analysis`, análisis estático (`detekt`, `ktlintCheck`) | **PASS (Verde)** | `poomsae`: 87.57% (324/370)<br>`geometry`: 96.03%<br>`signal`: 98.09% | 1 carga canónica v2 con cierre angular (0° tras retorno), 8+ casos inválidos específicos, y cobertura de fichas 13.4 para todos los pares posición/técnica. |
 
 ---
 
@@ -116,6 +117,22 @@
 
 ### Test T-F2-03: Regresión Completa y Calidad Estática
 - **Comando:** `./gradlew assembleDebug test detekt ktlintCheck`
+- **Resultado:** BUILD SUCCESSFUL (0 errores de compilación, 0 fallos de pruebas, 0 violaciones Detekt, 0 violaciones ktlint).
+
+---
+
+## Detalle de Evidencia - Fase F3
+
+### Test T-F3-01: Carga y Validación Estricta v2 de `poomsae_taegeuk1.json` (`PoomsaeLoaderTest`)
+- **Comando:** `./gradlew :analysis:test`
+- **Resultado:** BUILD SUCCESSFUL (44 tests totales en `:analysis`, 10 tests de `PoomsaeLoaderTest`, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Carga exitosa de `poomsae_taegeuk1.json` v2: 18 movimientos consecutivos, `validationStatus == DOCUMENTALLY_FIXED`, `officialCertification == false`, rumbos acumulados por movimiento y cierre angular en `0°` tras giro de retorno.
+  - Casos inválidos específicos con error legible: cantidad de movimientos != 18 (`InvalidMovementCount`), giro no permitido (`DisallowedTurnAngle`), técnica desconocida (`InvalidJsonFormat`), falta de cierre angular (`InvalidAngularClosure`), índices duplicados/no consecutivos (`NonConsecutiveMovementIndex`), campos v2 faltantes (`activeJoints`, `evaluationMode`, `expectedTurnDeg`, `sharesStanceWithPrevious` -> `MissingRequiredField`), `schemaVersion` incompatible (`IncompatibleSchemaVersion`), y `kihap` fuera de lugar o ausente en 18 (`InvalidKihapPlacement`).
+  - Cobertura de fichas de métricas (13.4): verificación de que cada movimiento y par posición/técnica/extra en los 18 movimientos resuelve sus métricas y articulaciones requeridas en `MetricSheetRegistry`.
+
+### Test T-F3-02: Regresión Completa y Calidad Estática
+- **Comando:** `./gradlew assembleDebug test :analysis:jacocoTestReport detekt ktlintCheck`
 - **Resultado:** BUILD SUCCESSFUL (0 errores de compilación, 0 fallos de pruebas, 0 violaciones Detekt, 0 violaciones ktlint).
 
 

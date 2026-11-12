@@ -146,4 +146,24 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F3 (Definición del poomsae: carga y validación estricta v2 de `poomsae_taegeuk1.json`).
 
+---
+
+## Sesión 4 — Fase F3: Definición del poomsae
+- **Fecha:** 2026-11-12
+- **Objetivo:** Cargar y validar estrictamente la secuencia `poomsae_taegeuk1.json` (esquema v2, sección 6.5) mediante `kotlinx.serialization`, exponiendo `PoomsaeDefinition` con `validationStatus`, cálculo de rumbo acumulado, verificación de cierre angular y resolución de fichas de métricas 13.4.
+- **Artefactos creados/modificados:**
+  - `build.gradle.kts`, `analysis/build.gradle.kts`, `gradle/libs.versions.toml` (`kotlinxSerialization` ajustada a `1.9.0` por compatibilidad binaria con Kotlin `2.2.10`)
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/poomsae/PoomsaeModels.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/poomsae/PoomsaeValidationError.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/poomsae/PoomsaeValidator.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/poomsae/PoomsaeLoader.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/poomsae/MetricSheetRegistry.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/poomsae/PoomsaeLoaderTest.kt`
+  - `docs/VERSIONS.md`, `docs/PROJECT_STATUS.md`, `docs/TEST_RESULTS.md`, `CHANGELOG.md`
+- **Pruebas ejecutadas:**
+  - `./gradlew :analysis:test :analysis:jacocoTestReport` (OK — 44/44 tests en `:analysis`, 10/10 en `PoomsaeLoaderTest`).
+  - `./gradlew assembleDebug test :analysis:jacocoTestReport detekt ktlintCheck` (OK — 0 errores, 0 violaciones Detekt/ktlint).
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F4 (Evaluador de postura, técnicas y métricas biomecánicas 13.4).
+
 

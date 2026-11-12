@@ -34,7 +34,7 @@
 | **Dagger Hilt** | `com.google.dagger:hilt-android`, `hilt-compiler` | `2.60.1` | Maven Central (`https://github.com/google/dagger/releases`) | 2026-11-11 |
 | **Hilt Navigation Compose** | `androidx.hilt:hilt-navigation-compose` | `1.4.0` | Google Maven (`https://developer.android.com/jetpack/androidx/releases/hilt`) | 2026-11-11 |
 | **Navigation Compose** | `androidx.navigation:navigation-compose` | `2.10.2` | Google Maven (`https://developer.android.com/jetpack/androidx/releases/navigation`) | 2026-11-11 |
-| **Kotlinx Serialization JSON** | `org.jetbrains.kotlinx:kotlinx-serialization-json` | `1.12.0` | Maven Central (`https://github.com/Kotlin/kotlinx.serialization/releases`) | 2026-11-11 |
+| **Kotlinx Serialization JSON** | `org.jetbrains.kotlinx:kotlinx-serialization-json` | `1.9.0` | Maven Central (`https://github.com/Kotlin/kotlinx.serialization/releases`, alineada a Kotlin 2.2.10) | 2026-11-12 |
 | **Core KTX** | `androidx.core:core-ktx` | `1.10.1` | Existente en proyecto / Google Maven | 2026-11-11 |
 | **Lifecycle Runtime KTX** | `androidx.lifecycle:lifecycle-runtime-ktx` | `2.6.1` | Existente en proyecto / Google Maven | 2026-11-11 |
 | **Activity Compose** | `androidx.activity:activity-compose` | `1.8.0` | Existente en proyecto / Google Maven | 2026-11-11 |

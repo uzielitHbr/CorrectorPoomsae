@@ -5,6 +5,14 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-12
+### Added
+- **Fase F3 (Definición del poomsae):**
+  - Tipos cerrados en `:analysis` (`Side`, `StanceType`, `Stance`, `TechniqueType`, `Technique`, `EvaluationMode`, `ValidationStatus`, `Movement`, `MovementHeading`, `PoomsaeDefinition`) con `kotlinx.serialization` (`1.9.0` compatible con Kotlin `2.2.10`).
+  - `PoomsaeLoader` y `PoomsaeValidator` con validación estricta del esquema v2 (`activeJoints`, `evaluationMode`, `expectedTurnDeg`, `sharesStanceWithPrevious`) y reglas de sección 6.5 (18 movimientos consecutivos, giros permitidos, `kihap` exclusivo en movimiento 18, rumbo acumulado y cierre angular en 0° tras retorno).
+  - `MetricSheetRegistry` para resolver las articulaciones MediaPipe requeridas por cada ficha de métrica (13.4) según postura, técnica, extra y giro.
+  - Suite `PoomsaeLoaderTest` con carga canónica de `poomsae_taegeuk1.json`, 8+ casos inválidos específicos y prueba de cobertura de fichas de métricas.
+
 ## [0.3.0] - 2026-11-12
 ### Added
 - **Fase F2 (Módulo `:analysis`: modelos y geometría):**
