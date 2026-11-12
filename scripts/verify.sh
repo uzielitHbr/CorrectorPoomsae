@@ -20,3 +20,4 @@ echo "-> 4. Verificación de Formato y Estilo ktlint..."
 echo "=========================================================="
 echo " ¡TODAS LAS VERIFICACIONES COMPLETADAS EN VERDE!          "
 echo "=========================================================="
+

@@ -5,6 +5,15 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-12
+### Added
+- **Fase F2 (Módulo `:analysis`: modelos y geometría):**
+  - Entidades puras de pose y análisis: `Joint`, `Landmark`, `PoseFrame`, `CoordinateSpace`, `PoseEstimator`, `MetricResult` (12.9.2) y `AnalysisConfig` con tolerancias `EPS_*`.
+  - Tipos vectoriales inmutables `Vec3` y `Vec2` con manejo explícito de errores para vectores de longitud cero o entradas no finitas (`GeometryResult`, nunca `NaN` silencioso).
+  - Primitivas geométricas y de orientación corporal (13.2): ángulos 2D/3D, ángulo con la vertical, proyección sobre plano, ángulo con signo, `estimateUpVector`, `hipAxisHorizontal`, `estimateForwardSign`, `bodyForwardDirection`, `computeHeadingDeg` y `computeHeadingFromFrame`.
+  - Filtros de suavizado y estadística robusta: `OneEuroFilter`, `OneEuroFilter3D`, `ExponentialMovingAverageFilter` y `SignalStats`.
+  - Configuración de reporte JaCoCo en `:analysis` y suite de 34 pruebas unitarias con cobertura de líneas > 96% en `geometry` y > 98% en `signal`.
+
 ## [0.2.0] - 2026-11-11
 ### Added
 - **Fase F1 (Inspección y completado del proyecto Android Studio existente):**

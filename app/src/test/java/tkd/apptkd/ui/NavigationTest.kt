@@ -28,3 +28,4 @@ class NavigationTest {
         assertTrue(routes.contains("settings"))
     }
 }
+

@@ -7,3 +7,4 @@ sealed class Screen(val route: String) {
     data object History : Screen("history")
     data object Settings : Screen("settings")
 }
+

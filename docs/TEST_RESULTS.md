@@ -11,6 +11,7 @@
 | :---: | :---: | :---: | :---: | :---: | :--- |
 | **F0** | 2026-11-11 | Validación estructural y matemática del JSON (`poomsae_taegeuk1.json`), verificación de Gradle dry-run | **PASS (Verde)** | N/A (Fase documental) | Se verificaron los 18 movimientos, índices 1..18, giros válidos {-180, -90, 0, 90, 180}, técnicas cerradas, kihap único en 18 y cierre angular perfecto (0° tras giro de retorno). |
 | **F1** | 2026-11-11 | Compilación completa (`assembleDebug`), pruebas unitarias (`testDebugUnitTest`, `:analysis:test`), análisis estático (`detekt`, `ktlintCheck`), script de CI local (`scripts/verify.sh`) | **PASS (Verde)** | 100% (Marcador base de módulo aislado) | 0 errores de compilación, 0 fallos de tests unitarios, 0 violaciones Detekt, 0 violaciones ktlint. |
+| **F2** | 2026-11-12 | Pruebas unitarias `:analysis:test` (34 tests), cobertura JaCoCo, compilación `:app` + `:analysis`, análisis estático (`detekt`, `ktlintCheck`) | **PASS (Verde)** | `geometry`: 96.03% (387/403)<br>`signal`: 98.09% (154/157)<br>`model`: 100.00% (54/54) | 34/34 tests en verde (incluye cálculos manuales de 0°, 90°, 180°, casos degenerados sin NaN, invariancia a traslación/rotación/handedness y filtros One Euro / EMA). |
 
 ---
 
@@ -91,5 +92,30 @@
 - **Comando:** `./scripts/verify.sh`
 - **Resultado:** `¡TODAS LAS VERIFICACIONES COMPLETADAS EN VERDE!`
 - **Pasos validados:** Ensamblado Debug, Pruebas Unitarias JVM, Análisis Estático Detekt y Verificación ktlint.
+
+---
+
+## Detalle de Evidencia - Fase F2
+
+### Test T-F2-01: Pruebas Unitarias de `:analysis` (Geometría, Primitivas 13.2 y Filtros de Señal)
+- **Comando:** `./gradlew :analysis:test`
+- **Resultado:** BUILD SUCCESSFUL (34 tests ejecutados, 0 fallos, 0 omitidos)
+- **Suites ejecutadas:**
+  - `AnalysisModuleMarkerTest`: verificación de aislamiento JVM puro sin dependencias Android.
+  - `Vec3AndVec2Test`: operaciones algebraicas 2D/3D, producto punto, producto cruz, norma, normalización explícita ante vector nulo y valores no finitos (`NaN`/`Infinity`).
+  - `AngleGeometryTest`: ángulos 3D y 2D de `0°`, `90°`, `180°` calculados a mano, ángulo con la vertical, proyección sobre plano, ángulo con signo, `wrapDegrees` e invariancia ante traslación y rotación.
+  - `BodyPrimitivesTest`: primitivas de la sección 13.2 (`estimateUpVector`, `hipAxisHorizontal`, `estimateForwardSign`, `bodyForwardDirection`, `computeHeadingDeg`, `computeHeadingFromFrame`), validación de invariancia ante traslación, inclinación de cámara, escala e inversión de mano (handedness) del eje Z, y retorno de `MetricResult.Unavailable` con motivo explícito ante entradas incompletas.
+  - `SignalFilterTest`: `OneEuroFilter`, `OneEuroFilter3D`, `ExponentialMovingAverageFilter` y `SignalStats` (`median`, `medianVec3`, `mad`, `variance`), incluyendo rechazo de timestamps no crecientes o valores `NaN`.
+
+### Test T-F2-02: Reporte de Cobertura JaCoCo (`:analysis:jacocoTestReport`)
+- **Comando:** `./gradlew :analysis:test :analysis:jacocoTestReport`
+- **Resultado:** Cobertura de líneas >= 90% superada en todos los paquetes requeridos:
+  - `mx/taekwondo/poomsae/analysis/geometry`: **96.03%** (`387/403` líneas cubiertas)
+  - `mx/taekwondo/poomsae/analysis/signal`: **98.09%** (`154/157` líneas cubiertas)
+  - `mx/taekwondo/poomsae/analysis/model`: **100.00%** (`54/54` líneas cubiertas)
+
+### Test T-F2-03: Regresión Completa y Calidad Estática
+- **Comando:** `./gradlew assembleDebug test detekt ktlintCheck`
+- **Resultado:** BUILD SUCCESSFUL (0 errores de compilación, 0 fallos de pruebas, 0 violaciones Detekt, 0 violaciones ktlint).
 
 

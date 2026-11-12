@@ -112,4 +112,38 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F2 (Módulo :analysis, modelos geométricos puros y validador del poomsae).
 
+---
+
+## Sesión 3 — Fase F2: Módulo `:analysis`: modelos y geometría
+- **Fecha:** 2026-11-12
+- **Objetivo:** Construir la base matemática probada del proyecto en Kotlin/JVM puro (`Joint`, `Landmark`, `PoseFrame`, `PoseEstimator`, `MetricResult`, `Vec3`, `Vec2`, primitivas 13.2, tolerancias `EPS_*` en `AnalysisConfig` y filtros de señal `OneEuroFilter`, `OneEuroFilter3D`, `ExponentialMovingAverageFilter`, `SignalStats`).
+- **Artefactos creados/modificados:**
+  - `gradle/libs.versions.toml`
+  - `analysis/build.gradle.kts`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/config/AnalysisConfig.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/model/Joint.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/model/Landmark.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/model/PoseFrame.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/model/MetricResult.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/geometry/GeometryResult.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/geometry/Vec3.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/geometry/Vec2.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/geometry/AngleGeometry.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/geometry/BodyPrimitives.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/signal/SignalStats.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/signal/ExponentialMovingAverageFilter.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/signal/OneEuroFilter.kt`
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/signal/OneEuroFilter3D.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/geometry/TestSkeletonHelper.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/geometry/Vec3AndVec2Test.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/geometry/AngleGeometryTest.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/geometry/BodyPrimitivesTest.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/signal/SignalFilterTest.kt`
+  - `docs/PROJECT_STATUS.md`, `docs/TEST_RESULTS.md`, `CHANGELOG.md`
+- **Pruebas ejecutadas:**
+  - `./gradlew :analysis:test :analysis:jacocoTestReport` (OK — 34/34 tests en verde; cobertura `geometry`: 96.03%, `signal`: 98.09%, `model`: 100.00%).
+  - `./gradlew assembleDebug test detekt ktlintCheck` (OK — 67 tareas exitosas, 0 errores, 0 violaciones Detekt/ktlint).
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F3 (Definición del poomsae: carga y validación estricta v2 de `poomsae_taegeuk1.json`).
+
 
