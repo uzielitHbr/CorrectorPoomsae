@@ -5,6 +5,22 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-12
+### Added
+- **Fase F6 (Calidad de señal y calibración del usuario):**
+  - Implementación de `FrameQualityGate` para rechazar cuadros antes del procesamiento por cuerpo incompleto, cortado por márgenes o a distancia inadecuada (torso demasiado grande o pequeño en imagen), con mensajes de ayuda estructurados (`MSG_FRAME_TOO_CLOSE`, `MSG_FRAME_TOO_FAR`, `MSG_FRAME_CUT`, `MSG_LOW_CONF`, `MSG_LOST`).
+  - Implementación del calibrador de proporciones `BodyProfileCalibrator`, calculando la mediana estadística de las dimensiones de segmentos corporales (`lThigh`, `lShank`, `lLeg`, `torsoLength`, `shoulderWidth`, `armLength`, `dNoseShoulder`, `tImgMedian`) en posición erguida lista (*junbi seogi*) y verificando su estabilidad temporal con MAD / Mediana <= `CAL_MAX_REL_MAD`.
+  - Captura y persistencia de la base de orientación espacial de referencia ($u$, $\sigma$, $F_0$ y $r_0$) en la entidad `BodyProfile`.
+  - Suite de pruebas unitarias `FrameQualityGateTest` y `BodyProfileCalibratorTest`.
+- **Fase F7 (Evaluador estático de movimientos):**
+  - Implementación de las 21 métricas biomecánicas definidas en la sección 13.4 en `MetricCalculator` (desglosadas en `StanceMetrics`, `ArmTechniqueMetrics`, `ArmBiometrics`, `KickMetrics` y `TurnMetrics`).
+  - Función de puntuación por bandas de 0 a 100 con descenso lineal (`MetricScoringBand`) y registro central normativo `MetricBandRegistry`, con todos los umbrales declarados explícitamente como `PENDIENTE_CALIBRAR` (Regla R-05).
+  - Catálogo de 27 códigos normativos `FeedbackCode` en dominio puro `:analysis` y su mapeador `FeedbackMessageMapper` a recursos en español de México en `:app`.
+  - Motor de reglas `FeedbackRuleEngine` para generar retroalimentación estructurada ante cualquier desviación fuera de la banda ideal.
+  - Motor de evaluación estática `MovementEvaluator` implementando estrictamente el modelo de evaluabilidad de la sección 13.7 con sus cuatro conceptos (*evaluable*, *parcialmente evaluable*, *no evaluable* e *incorrecto*) y ponderación crítica vs secundaria.
+  - Constructor sintético 3D `SkeletonBuilder` para inyección determinista de poses y ángulos en pruebas.
+  - Suites de pruebas `MovementEvaluatorTest`, `MetricCalculatorTest` y `FeedbackMessageMapperTest` con demostración de monotonía, simetría y cobertura de líneas del 89.79% en el paquete `evaluation`.
+
 ## [0.5.0] - 2026-11-12
 ### Added
 - **Fases F4 y F5 (Cámara, permisos y detección de pose con MediaPipe):**

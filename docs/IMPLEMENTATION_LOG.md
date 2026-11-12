@@ -192,4 +192,35 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna. Pruebas físicas en teléfonos reales registradas como Pendiente Externo.
 - **Siguiente paso:** Proceder a Fase F6 (Calidad de señal, FrameQualityGate y calibración del usuario).
 
+---
+
+## Sesión 6 — Fases F6 y F7: Calidad de señal, calibración del usuario y evaluador estático de movimientos
+- **Fecha:** 2026-11-12
+- **Objetivo:** Asegurar que solo se evalúen cuadros confiables mediante `FrameQualityGate`, calibrar antropométricamente el perfil corporal del atleta (`BodyProfileCalibrator`, `BodyProfile`) capturando los rumbos de referencia $F_0$ y $r_0$ en *junbi seogi*, e implementar el evaluador estático de movimientos (`MetricCalculator`, `MetricBandRegistry`, `FeedbackRuleEngine`, `MovementEvaluator`, `FeedbackMessageMapper`) según el modelo de evaluabilidad de la sección 13.7 con sus cuatro conceptos (*evaluable*, *parcialmente evaluable*, *no evaluable* e *incorrecto*) y la puntuación por bandas de la sección 13.8.
+- **Artefactos creados/modificados:**
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/config/AnalysisConfig.kt` (incorporación de umbrales `FRAME_MARGIN_RATIO`, `TORSO_MIN/MAX_HEIGHT_RATIO`, `CAL_MIN_FRAMES`, `CAL_MAX_REL_MAD`, `FULL_COVERAGE`, `MIN_COVERAGE`, `WEIGHT_CRITICAL/SECONDARY`, `T_CORRECT`, `T_IMPROVABLE`, todos declarados formalmente como `PENDIENTE_CALIBRAR` según regla R-05).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/model/BodyProfile.kt` (perfil corporal antropométrico y base de orientación espacial normalizada).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/quality/FrameQualityResult.kt` (`FrameQualityResult`, `QualityRejectionCode`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/quality/FrameQualityGate.kt` (compuerta de calidad de encuadre, distancia por altura de torso en imagen, márgenes y visibilidad mínima con mensajes `MSG_FRAME_*`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/quality/BodyProfileCalibrator.kt` (calibrador con mediana y verificación de estabilidad temporal relativa MAD / Mediana <= `CAL_MAX_REL_MAD`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/FeedbackCode.kt` (enumeración cerrada de 27 códigos normativos y `FeedbackItem`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MovementEvaluationModels.kt` (`Evaluability`, `MovementCategory`, `MovementOutcome`, `MovementEvaluation`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MetricBands.kt` (`MetricScoringBand` con descenso lineal y registro central `MetricBandRegistry`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/FeedbackRuleEngine.kt` (traductor de desviaciones métricas a códigos estructurados `FeedbackCode`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MetricCalculator.kt` (cálculo de las 21 métricas biomecánicas de la sección 13.4 distribuidas modularmente en `StanceMetrics`, `ArmTechniqueMetrics`, `ArmBiometrics`, `KickMetrics` y `TurnMetrics`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MovementEvaluator.kt` (motor evaluador estático con resolución de métricas críticas y modelo de 4 conceptos de 13.7).
+  - `app/src/main/res/values/strings.xml` y `app/src/main/java/tkd/apptkd/ui/FeedbackMessageMapper.kt` (mapeo seguro a recursos de texto en español de México).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/testutil/SkeletonBuilder.kt` (constructor sintético 3D paramétrico para inyección determinista de poses y ángulos).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/quality/FrameQualityGateTest.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/quality/BodyProfileCalibratorTest.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MovementEvaluatorTest.kt`
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MetricCalculatorTest.kt`
+  - `app/src/test/java/tkd/apptkd/ui/FeedbackMessageMapperTest.kt`
+  - `docs/PROJECT_STATUS.md`, `docs/TEST_RESULTS.md`, `CHANGELOG.md`, `docs/ARCHITECTURE.md`
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleDebug testDebugUnitTest detekt ktlintCheck` (OK — compilación exitosa, 74 pruebas unitarias totales en verde, 0 incidencias Detekt, 0 violaciones ktlint).
+  - `./gradlew :analysis:test :analysis:jacocoTestReport` (OK — 69 pruebas en `:analysis`, cobertura de líneas en `mx/taekwondo/poomsae/analysis/evaluation` = 89.79% >= 85%, global en `:analysis` = 92.25%).
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F8 (Segmentación temporal y secuenciación guiada con máquina de estados).
+
 
