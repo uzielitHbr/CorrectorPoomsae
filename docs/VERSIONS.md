@@ -53,3 +53,4 @@
 | **Espresso Core** | `androidx.test.espresso:espresso-core` | `3.5.1` | Existente en proyecto / Google Maven | 2026-11-11 |
 | **Detekt** | `io.gitlab.arturbosch.detekt` | `1.23.8` | Gradle Plugin Portal (`https://detekt.dev/`) | 2026-11-11 |
 | **ktlint** | `com.pinterest.ktlint` | `1.5.0` | Maven Central / GitHub (`https://pinterest.github.io/ktlint/`) | 2026-11-11 |
+

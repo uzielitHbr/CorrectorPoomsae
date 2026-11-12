@@ -40,3 +40,4 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
   - Script automatizado de validación estructural de `poomsae_taegeuk1.json` (18 movimientos, tipos, giros, cierre angular 0° - OK).
 - **Decisiones pendientes:** Ninguna para F0.
 - **Siguiente paso:** Proceder a Fase F1 (Inspección y completado del proyecto Android Studio existente).
+

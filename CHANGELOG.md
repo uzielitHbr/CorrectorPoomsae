@@ -16,3 +16,4 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
   - Catálogo oficial de versiones de dependencias verificadas en `docs/VERSIONS.md`.
   - Documentos de memoria y orquestación del proyecto en `docs/`: `PROJECT_STATUS.md`, `IMPLEMENTATION_LOG.md`, `ARCHITECTURE.md`, `KNOWN_ISSUES.md` y `TEST_RESULTS.md`.
   - `README.md` actualizado con advertencia de secuencia fijada documentalmente y directrices de compilación.
+

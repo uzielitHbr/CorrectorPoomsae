@@ -117,3 +117,4 @@ Todas las fuentes contrastadas son secundarias; ninguna corresponde al ejemplar 
 
 ## Pendiente Opcional Documentado
 Consultar en el futuro directamente el texto impreso *Taekwondo Textbook* (Kim, S.-B., 2012, Seúl: Kukkiwon). Si el autor del proyecto o su asesor detectan variaciones respecto a esta fijación documental, se gestionará mediante el protocolo formal de solicitud de cambio definido en la sección 15.3 de la especificación técnica.
+

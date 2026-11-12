@@ -106,3 +106,4 @@ sealed interface MetricResult {
   - `voice_guidance_enabled`: Boolean (por defecto false).
   - `strictness_level`: RELAXED / NORMAL / STRICT (por defecto NORMAL).
   - `save_keypoint_snapshots`: Boolean (por defecto false).
+

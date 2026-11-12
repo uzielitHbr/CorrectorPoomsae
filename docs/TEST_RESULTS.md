@@ -53,3 +53,4 @@
 ### Test T-F0-03: Verificación de Línea Base Gradle
 - **Comando:** `./gradlew tasks --dry-run`
 - **Resultado:** BUILD SUCCESSFUL in 1s.
+

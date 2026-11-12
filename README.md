@@ -93,3 +93,4 @@ SessionState (StateFlow) ──► UI (Jetpack Compose / Material 3)
 # Análisis estático de código
 ./gradlew detekt ktlintCheck
 ```
+
