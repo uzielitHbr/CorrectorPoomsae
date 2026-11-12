@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AppTkd"
 include(":app")
+include(":analysis")

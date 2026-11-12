@@ -90,3 +90,48 @@
   - Android PdfDocument API: `https://developer.android.com/reference/android/graphics/pdf/PdfDocument`
   - Android FileProvider: `https://developer.android.com/reference/androidx/core/content/FileProvider`
 
+---
+
+## 5. Decisiones Técnicas Específicas de la Fase F1 (Gradle, Tooling y SDK)
+
+### D-F1-01: Fijación y Justificación de Niveles de SDK (`minSdk = 26`, `compileSdk = 37`, `targetSdk = 37`)
+- **Fecha:** 11 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  1. **`minSdk = 26` (Android 8.0 Oreo):**
+     - Requisitos de dependencias clave: MediaPipe Tasks Vision (`tasks-vision`) exige `minSdk >= 24`; CameraX (`camera-core`, `camera-camera2`, `camera-lifecycle`) exige `minSdk >= 21`.
+     - `minSdk 26` garantiza soporte nativo de la API temporal `java.time` (Instant, Duration) sin necesidad de desugaring agresivo y cubre >95% de los dispositivos Android activos a nivel global.
+  2. **`compileSdk = 37` y `targetSdk = 37`:**
+     - Establecidos por la plantilla moderna de Android Studio / AGP 9 para soportar las últimas optimizaciones del runtime y APIs del sistema Android, manteniendo compatibilidad hacia atrás mediante el toolchain Java 21.
+
+### D-F1-02: Versión de Dagger Hilt (2.60.1) ante Android Gradle Plugin 9.3
+- **Fecha:** 11 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - AGP 9 eliminó la clase legada `com.android.build.gradle.BaseExtension`. Versiones previas de Hilt ($\le 2.58$) arrojaban `NoClassDefFoundError: com/android/build/gradle/BaseExtension` al aplicar el plugin `dagger.hilt.android.plugin`.
+  - Hilt `2.60.1` fue verificado como la versión estable que implementa la nueva API de extensiones de AGP 9.
+
+### D-F1-03: Fijación del Toolchain JVM del Demonio Gradle a JDK 21
+- **Fecha:** 11 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - Detekt 1.23.8 utiliza el compilador Kotlin/JVM embebido con el parser de AST de IntelliJ. Al ejecutarse el demonio de Gradle sobre OpenJDK 25, Detekt fallaba con `IllegalArgumentException: 25` debido a que la versión de bytecode 25 no es reconocida por el analizador de Detekt.
+  - Se configuró `gradle/gradle-daemon-jvm.properties` con `toolchainVersion=21` y `org.gradle.java.home=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home` en `gradle.properties`, garantizando reproducibilidad y estabilidad en CI y local.
+
+### D-F1-04: Configuración de KSP con Kotlin Integrado en AGP 9
+- **Fecha:** 11 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - AGP 9 con Kotlin integrado impone validación estricta sobre la modificación de `kotlin.sourceSets`. KSP añade directorios autogenerados mediante esta API legada.
+  - Se habilitó `android.disallowKotlinSourceSets=false` y se suprimió la advertencia correspondiente en `gradle.properties` según la documentación oficial de migración de AGP 9.
+
+### D-F1-05: Reglas de Análisis Estático (Detekt y ktlint) para Jetpack Compose
+- **Fecha:** 11 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - En Detekt (`config/detekt/detekt.yml`), se configuró la regla `naming > FunctionNaming` con `ignoreAnnotated: ['Composable']` para permitir la convención estándar de Jetpack Compose (funciones PascalCase).
+  - Se habilitó `ignorePropertyDeclaration: true` en `style > MagicNumber` para permitir valores hexadecimales de color de Material 3 (`0xFF...`).
+  - Se ajustó el umbral de `complexity > LongMethod` a 100 para permitir definiciones declarativas de pantallas Compose completas.
+  - Se integró `org.jlleitschuh.gradle.ktlint` (versión 12.1.2) con tareas paraguas `ktlintCheck` y `ktlintFormat`.
+
+

@@ -41,3 +41,75 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna para F0.
 - **Siguiente paso:** Proceder a Fase F1 (Inspección y completado del proyecto Android Studio existente).
 
+---
+
+## [2026-11-11] - Fase F1: Inspección y completado del proyecto Android Studio existente
+
+- **Objetivo de la fase:** Inspeccionar el proyecto existente, completar su configuración Gradle (Kotlin DSL), crear el módulo `:analysis` como biblioteca pura de Kotlin/JVM aislada, y configurar el módulo `:app` con Hilt, Jetpack Compose (Material 3), Navigation Compose, temas y catálogo de mensajes en español (México).
+- **Acciones realizadas:**
+  1. Configuración de `settings.gradle.kts` incorporando ambos módulos: `:app` y `:analysis`.
+  2. Creación del módulo `:analysis` (`analysis/build.gradle.kts`, `src/main/kotlin`, `src/test/kotlin`) como biblioteca pura Kotlin/JVM con toolchain Java 21, cero dependencias de Android framework, y dependencias unitarias (JUnit 4, MockK, Turbine, Coroutines Test).
+  3. Actualización de `gradle/libs.versions.toml` con versiones estables verificadas para Hilt 2.60.1, KSP 2.2.10-2.0.2, Detekt 1.23.8, ktlint plugin 12.1.2, Navigation Compose 2.8.8, Kotlin Coroutines 1.10.2, Turbine 1.2.1, MockK 1.14.11.
+  4. Configuración del módulo `:app` (`app/build.gradle.kts`) con plugins de Android Application, Kotlin Android, KSP, Hilt Android, Detekt y ktlint. Configuración de `minSdk = 26`, `compileSdk = 37`, `targetSdk = 37`, Java 21, Compose activado con Compose Compiler integrado en Kotlin 2.2.10, y enlace con `:analysis` (`implementation(project(":analysis"))`).
+  5. Configuración de Dagger Hilt: creación de `TaegeukCoachApp` anotada con `@HiltAndroidApp`, vinculada en `AndroidManifest.xml`.
+  6. Actualización de `MainActivity` con `@AndroidEntryPoint` y configuración del host de navegación Jetpack Compose.
+  7. Implementación de diseño y tokens Material 3 en `Color.kt` y `Theme.kt` conforme a la Sección 14.2 (paleta primaria, secundaria, superficies, contornos, colores semánticos de resultados VERDE/AMARILLO/ROJO y scrim para overlays de cámara).
+  8. Configuración de catálogo de recursos en español de México (`app/src/main/res/values/strings.xml`) cubriendo nombres de pantallas y catálogo formal de mensajes de sistema (Sección 12.8: cámara, pose, calidad, estado y advertencia de no certificación Kukkiwon).
+  9. Implementación de arquitectura de navegación:
+     - `Screen`: sealed class con rutas tipadas (`home`, `practice`, `summary`, `history`, `settings`).
+     - 5 pantallas vacías Compose con títulos accesibles e indicadores de fase: `HomeScreen`, `PracticeScreen`, `SummaryScreen`, `HistoryScreen`, `SettingsScreen`.
+     - `AppNavigation`: NavHost que enlaza las 5 pantallas con punto de entrada en Inicio (`home`).
+  10. Configuración de análisis estático:
+      - Archivo de configuración Detekt en `config/detekt/detekt.yml` ajustado para Jetpack Compose (`FunctionNaming` Composable, `MagicNumber` ignorePropertyDeclaration, `LongMethod` threshold 100).
+      - Plugins de Detekt y ktlint aplicados a nivel raíz y en subproyectos con tareas aggregate `detekt` y `ktlintCheck`.
+  11. Implementación de automatización y CI:
+      - Script local `scripts/verify.sh` ejecutable con verificación por fases: assembleDebug, testDebugUnitTest, detekt y ktlintCheck.
+      - Flujo de GitHub Actions en `.github/workflows/ci.yml` configurado con JDK 21.
+  12. Creación de pruebas unitarias:
+      - `AnalysisModuleMarkerTest` en `:analysis` para validar aislamiento JVM.
+      - `NavigationTest` en `:app` para validar completitud de rutas y consistencia de destinos.
+- **Archivos creados / modificados:**
+  - `build.gradle.kts`
+  - `settings.gradle.kts`
+  - `gradle.properties`
+  - `gradle/gradle-daemon-jvm.properties`
+  - `gradle/libs.versions.toml`
+  - `.gitignore`
+  - `.github/workflows/ci.yml`
+  - `scripts/verify.sh`
+  - `config/detekt/detekt.yml`
+  - `analysis/build.gradle.kts`
+  - `analysis/src/main/kotlin/tkd/analysis/AnalysisModuleMarker.kt`
+  - `analysis/src/test/kotlin/tkd/analysis/AnalysisModuleMarkerTest.kt`
+  - `app/build.gradle.kts`
+  - `app/proguard-rules.pro`
+  - `app/src/main/AndroidManifest.xml`
+  - `app/src/main/java/tkd/apptkd/TaegeukCoachApp.kt`
+  - `app/src/main/java/tkd/apptkd/MainActivity.kt`
+  - `app/src/main/java/tkd/apptkd/ui/navigation/Screen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/navigation/AppNavigation.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/HomeScreen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/PracticeScreen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/SummaryScreen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/HistoryScreen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/screens/SettingsScreen.kt`
+  - `app/src/main/java/tkd/apptkd/ui/theme/Color.kt`
+  - `app/src/main/java/tkd/apptkd/ui/theme/Theme.kt`
+  - `app/src/main/java/tkd/apptkd/ui/theme/Type.kt`
+  - `app/src/main/res/values/strings.xml`
+  - `app/src/test/java/tkd/apptkd/ExampleUnitTest.kt`
+  - `app/src/test/java/tkd/apptkd/ui/NavigationTest.kt`
+  - `docs/DECISIONS.md`
+  - `docs/PROJECT_STATUS.md`
+  - `docs/TEST_RESULTS.md`
+  - `CHANGELOG.md`
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleDebug` (OK - APK de depuración generado).
+  - `./gradlew testDebugUnitTest` y `./gradlew test` (OK - 100% pruebas unitarias pasando en ambos módulos).
+  - `./gradlew detekt` (OK - 0 violaciones reportadas).
+  - `./gradlew ktlintCheck` (OK - 0 violaciones de estilo de código).
+  - `./scripts/verify.sh` (OK - Suite completa en verde).
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F2 (Módulo :analysis, modelos geométricos puros y validador del poomsae).
+
+

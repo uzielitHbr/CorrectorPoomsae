@@ -1,3 +1,48 @@
 <resources>
-    <string name="app_name">AppTkd</string>
+    <!-- Nombre de la aplicación (Sección 14.1) -->
+    <string name="app_name">Taegeuk Coach</string>
+    <string name="form_title">Taegeuk 1 Jang (태극 1장)</string>
+    <string name="form_movements_count">18 movimientos</string>
+
+    <!-- Navegación y Pantallas Base (F1, Sección 14.7) -->
+    <string name="screen_home">Inicio</string>
+    <string name="screen_practice">Práctica</string>
+    <string name="screen_summary">Resumen</string>
+    <string name="screen_history">Historial</string>
+    <string name="screen_settings">Ajustes</string>
+    <string name="btn_start_practice">Comenzar práctica</string>
+    <string name="btn_analyze_video">Analizar un video</string>
+    <string name="btn_history">Historial</string>
+    <string name="btn_settings">Ajustes</string>
+    <string name="btn_back">Atrás</string>
+
+    <!-- Catálogo Normativo de Mensajes del Sistema (Sección 12.8, Español de México) -->
+    <string name="MSG_PERM_RATIONALE">Necesitamos la cámara para ver tu postura. El video se procesa en tu teléfono y no se envía a ningún servidor.</string>
+    <string name="MSG_PERM_SETTINGS">El permiso de cámara está desactivado. Actívalo en los ajustes para continuar.</string>
+    <string name="MSG_FRAME_TOO_CLOSE">Aléjate un poco para que se vea tu cuerpo completo.</string>
+    <string name="MSG_FRAME_TOO_FAR">Acércate un poco al teléfono.</string>
+    <string name="MSG_FRAME_CUT">Se corta una parte de tu cuerpo. Ajusta el teléfono o tu posición.</string>
+    <string name="MSG_ONE_PERSON">Solo debe aparecer una persona en la imagen.</string>
+    <string name="MSG_CAL_RETRY">No pudimos medir tu cuerpo con claridad. Mejora la luz, evita fondos muy claros y quédate quieto.</string>
+    <string name="MSG_LOST">Perdimos de vista tu cuerpo. Vuelve al encuadre para continuar.</string>
+    <string name="MSG_LOST_MOVE">Se interrumpió el movimiento. ¿Quieres repetirlo u omitirlo?</string>
+    <string name="MSG_LOW_CONF">No pudimos evaluar este movimiento con seguridad.</string>
+    <string name="MSG_STRICT">Repite el movimiento para continuar.</string>
+    <string name="MSG_REPEAT">Repite el movimiento desde esta posición.</string>
+    <string name="MSG_OMIT">¿Omitiste el movimiento? Puedes continuar o repetirlo.</string>
+    <string name="MSG_CAM_ERR">La cámara se interrumpió. Pulsa «Reintentar».</string>
+    <string name="MSG_PAUSED">Práctica en pausa. Pulsa «Reanudar» cuando estés listo.</string>
+    <string name="MSG_EXIT">¿Quieres salir de la práctica?</string>
+    <string name="MSG_RESUME">Tienes una práctica sin terminar. ¿Quieres retomarla?</string>
+    <string name="MSG_MODEL_ERR">No se pudo iniciar el análisis de postura. Inténtalo de nuevo.</string>
+    <string name="MSG_LOW_FPS">Tu teléfono va lento. Cierra otras apps o usa el análisis de video.</string>
+    <string name="MSG_THERMAL">El teléfono está muy caliente. Conviene hacer una pausa.</string>
+    <string name="MSG_SAVE_ERR">No se pudo guardar. Puedes exportar el resumen.</string>
+    <string name="MSG_UNVALIDATED">Secuencia no validada oficialmente.</string>
+    <string name="MSG_EXPERIMENTAL">Modo experimental: los resultados son orientativos.</string>
+    <string name="MSG_NO_SCORE">No fue posible evaluar esta práctica. Revisa las sugerencias de colocación.</string>
+    <string name="MSG_VIDEO_ERR">No se pudo abrir el video. Revisa el formato, la duración y el tamaño.</string>
+    <string name="MSG_VIDEO_CANCEL">Análisis cancelado.</string>
+    <string name="MSG_DELETE_ALL">Se borrarán todas tus prácticas y datos de esta app. Esta acción no se puede deshacer.</string>
+    <string name="MSG_DISCLAIMER">La puntuación es orientativa y no es una calificación oficial.</string>
 </resources>
