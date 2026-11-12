@@ -272,5 +272,71 @@
   - `:app`: 32 pruebas unitarias (100% pasando).
   - Total: 118 pruebas unitarias.
 
+## 11. Fase F10: Persistencia, Historial y Exportación (2026-11-12)
+
+### Test T-F10-01: Persistencia Room y Cascada (`RoomDatabaseTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.data.RoomDatabaseTest"`
+- **Resultado:** BUILD SUCCESSFUL (4 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados con Robolectric:**
+  - `testInsertAndQuerySessionWithMovements`: Inserción atómica transaccional de `SessionEntity` y lista de `MovementResultEntity` recuperada con `@Relation` en `SessionWithMovements`.
+  - `testCascadeDeleteMovementsWhenSessionDeleted`: Eliminación de una sesión borra en cascada todas sus filas secundarias en `movement_result`.
+  - `testDraftLifecycle`: Guardado, actualización, recuperación y limpieza del borrador único `SessionDraftEntity` (id = 1).
+  - `testDeleteAllWipesData`: Limpieza integral de sesiones y borradores.
+
+### Test T-F10-02: Migración y Respaldo de Base de Datos (`DatabaseMigrationTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.data.DatabaseMigrationTest"`
+- **Resultado:** BUILD SUCCESSFUL (3 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - `testMigration1To2SqlExecution`: Validación sintáctica y ejecución de migración `MIGRATION_1_2`.
+  - `testBackupDatabaseFileWhenExists`: Creación de archivo `.bak` preservando datos antes de cualquier migración de riesgo (Sección 8.1).
+  - `testBackupDatabaseFileWhenNotExists`: Manejo seguro cuando la base de datos es nueva.
+
+### Test T-F10-03: Repositorio de Preferencias DataStore (`UserSettingsRepositoryTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.data.UserSettingsRepositoryTest"`
+- **Resultado:** BUILD SUCCESSFUL (4 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - `testDefaultSettings`: Valores por defecto oficiales (`CameraFacing.FRONT`, `voiceEnabled = true`, `exigencyLevel = NORMAL`, `strictMode = false`, `saveSnapshots = false`).
+  - `testUpdateCameraFacingAndVoice`: Conmutación reactiva de facing y voz.
+  - `testUpdateExigencyAndStrict`: Conmutación de nivel de exigencia y modo estricto.
+  - `testClearAllResetsToDefaults`: Restablecimiento integral a valores iniciales.
+
+### Test T-F10-04: Servicio de Borrado Total SC-30 (`DataErasureServiceTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.data.DataErasureServiceTest"`
+- **Resultado:** BUILD SUCCESSFUL (1 test ejecutado, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - `testDeleteAllUserDataLeavesEmptyState`: Borrado integral e irreversible de tablas Room, borrador en disco, preferencias DataStore, archivos privados de capturas y exportaciones en caché, y reseteo de la sesión activa en memoria.
+
+### Test T-F10-05: Exportador de Sesiones a Texto y PDF (`SessionExporterTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.export.SessionExporterTest"`
+- **Resultado:** BUILD SUCCESSFUL (3 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - `testExportAsTextContainsRequiredHeadersAndDisclaimers`: Generación de archivo `.txt` con encabezados oficiales, ID, fecha, desglose de 18 movimientos y los disclaimers normativos obligatorios `MSG_DISCLAIMER` y `MSG_UNVALIDATED`.
+  - `testExportAsPdfCreatesValidFile`: Generación de documento PDF estructurado mediante `PdfDocument` con `ShadowPdfDocument`.
+  - `testCreateShareIntent`: Construcción de `Intent.ACTION_SEND` con URI segura mediante `FileProvider` y flags `FLAG_GRANT_READ_URI_PERMISSION`.
+
+### Test T-F10-06: ViewModel de Historial (`HistoryViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.HistoryViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (3 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados con Turbine:**
+  - `testHistoryStateEmitsSessionsAndCalculatesAverage`: Flujo reactivo emitiendo lista de sesiones históricas y cálculo exacto del promedio de puntuaciones completadas.
+  - `testDeleteSessionRemovesFromState`: Eliminación de una sesión reflejada inmediatamente en el estado UI.
+  - `testOpenSessionSummaryLoadsHolder`: Reconstrucción de la sesión en `SessionSummaryData` y carga en `PracticeSessionHolder` para navegación a pantalla de resumen.
+
+### Test T-F10-07: ViewModel de Ajustes (`SettingsViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.SettingsViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (2 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados con Turbine:**
+  - `testSettingsEmissionsAndUpdateFlow`: Flujo continuo de emisión y actualización de todos los ajustes (`defaultCameraFacing`, `voiceEnabled`, `exigencyLevel`, `strictMode`, `saveSnapshots`).
+  - `testDeleteAllDataInvokesCallback`: Invocación del servicio SC-30 y callback de navegación hacia Inicio.
+
+### Test T-F10-08: Verificación Integral del Proyecto y CI Local
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (138/138 tests unitarios totales en verde, 0 incidencias Detekt, 0 violaciones ktlintCheck, compilación assembleDebug OK).
+- **Desglose de pruebas unitarias:**
+  - `:analysis`: 86 pruebas unitarias (100% pasando).
+  - `:app`: 52 pruebas unitarias (100% pasando).
+  - Total: 138 pruebas unitarias.
+
+
 
 

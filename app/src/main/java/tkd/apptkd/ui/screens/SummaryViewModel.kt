@@ -1,5 +1,6 @@
 package tkd.apptkd.ui.screens
 
+import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mx.taekwondo.poomsae.analysis.evaluation.MovementCategory
+import tkd.apptkd.data.room.SessionEntityMapper
+import tkd.apptkd.data.room.SessionWithMovements
+import tkd.apptkd.export.SessionExporter
 import tkd.apptkd.ui.PracticeSessionHolder
 import javax.inject.Inject
 
@@ -33,6 +37,7 @@ data class SummaryUiState(
 @HiltViewModel
 class SummaryViewModel @Inject constructor(
     private val sessionHolder: PracticeSessionHolder,
+    private val sessionExporter: SessionExporter? = null,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SummaryUiState())
@@ -67,5 +72,21 @@ class SummaryViewModel @Inject constructor(
             }
         }
     }
-}
 
+    fun getShareIntent(isPdf: Boolean = true): Intent? {
+        val summary = sessionHolder.currentSummary.value
+        val exporter = sessionExporter
+        if (summary == null || exporter == null) {
+            return null
+        }
+        val (sessionEntity, movementEntities) = SessionEntityMapper.toEntities(summary)
+        val sessionWithMovements = SessionWithMovements(sessionEntity, movementEntities)
+        val uri = if (isPdf) {
+            exporter.exportAsPdf(sessionWithMovements)
+        } else {
+            exporter.exportAsText(sessionWithMovements)
+        }
+        val mime = if (isPdf) "application/pdf" else "text/plain"
+        return exporter.createShareIntent(uri, mime)
+    }
+}

@@ -31,4 +31,19 @@ object AppModule {
     @Singleton
     fun provideVoicePlayer(@ApplicationContext context: Context): VoicePlayer =
         AndroidVoicePlayer(context)
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): tkd.apptkd.data.room.AppDatabase =
+        tkd.apptkd.data.room.AppDatabase.buildDatabase(context)
+
+    @Provides
+    @Singleton
+    fun provideSessionDao(database: tkd.apptkd.data.room.AppDatabase): tkd.apptkd.data.room.SessionDao =
+        database.sessionDao()
+
+    @Provides
+    @Singleton
+    fun provideSessionDraftDao(database: tkd.apptkd.data.room.AppDatabase): tkd.apptkd.data.room.SessionDraftDao =
+        database.sessionDraftDao()
 }

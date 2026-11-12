@@ -1,5 +1,6 @@
 package tkd.apptkd.ui.screens
 
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,6 +69,7 @@ fun SummaryScreen(
     viewModel: SummaryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     // Regla de navegación: al presionar atrás desde Resumen se vuelve a Inicio (Sección 14.7)
     BackHandler {
@@ -77,6 +80,16 @@ fun SummaryScreen(
         uiState = uiState,
         onNavigateToHome = onNavigateToHome,
         onNavigateToDetail = onNavigateToDetail,
+        onShareClick = {
+            val intent = viewModel.getShareIntent(isPdf = true)
+            intent?.let {
+                val chooser = Intent.createChooser(
+                    it,
+                    context.getString(R.string.export_share_chooser_title),
+                )
+                context.startActivity(chooser)
+            }
+        },
         modifier = modifier,
     )
 }
@@ -87,6 +100,7 @@ fun SummaryContent(
     uiState: SummaryUiState,
     onNavigateToHome: () -> Unit,
     onNavigateToDetail: (Int) -> Unit,
+    onShareClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -179,7 +193,7 @@ fun SummaryContent(
             ) {
                 SecondaryButton(
                     text = stringResource(id = R.string.btn_share),
-                    onClick = {},
+                    onClick = onShareClick,
                     modifier = Modifier.weight(1f),
                 )
                 PrimaryButton(

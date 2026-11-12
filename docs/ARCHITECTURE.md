@@ -144,4 +144,56 @@ sealed interface MetricResult {
 - **`FeedbackRuleEngine` y `FeedbackMessageMapper`:**
   - 27 códigos normativos `FeedbackCode` generados en dominio puro y mapeados a recursos en español de México (`strings.xml`).
 
+---
+
+## 7. Segmentación Temporal y Máquina de Estados (Fase F8)
+
+- **`JointSpeedCalculator`:**
+  - Velocidad articular instantánea y agregada ponderada $\bar{v}_{\text{active}}$ normalizada en torsos/segundo.
+- **`MotionSegmenter`:**
+  - Máquina de estados para los 18 movimientos (`AwaitingMovement`, `InMovement`, `Holding`, `Evaluated`).
+  - Detección de inicio de movimiento ($v \ge V_{\text{START}}$ con lockout de 400 ms) y sostén de postura ($v < V_{\text{STILL}}$ durante $\ge 600\text{ ms}$).
+  - Extracción de postura clave estática y picos de elevación en patadas `PEAK_THEN_HOLD` (movimientos 14 y 16).
+  - Escenarios de no confusión para posturas estáticas sucesivas (movimientos 5 $\rightarrow$ 6 y 11 $\rightarrow$ 12).
+- **`SessionEngine`:**
+  - Orquestador de la sesión de práctica en tiempo real con `StateFlow<SessionState>` y `SharedFlow<SessionEvent>`.
+  - Soporte a comandos de recuperación SC-13 (`Pause`, `Resume`, `RepeatCurrent`, `SkipCurrent`, `Discard`).
+  - Detección de pérdida de tracking prolongada y reanudación automática tras recuperación de cuadros confiables.
+
+---
+
+## 8. Capa de Presentación y Experiencia de Usuario (Fase F9)
+
+- **Diseño Cerrado (Sección 14):**
+  - Paleta Material 3 con `ExtendedColors` para retroalimentación semántica (verde, ámbar, rojo, gris).
+  - Escala tipográfica oficial basada en tokens Material 3.
+  - Regla R-10: 100% de textos centralizados en `strings.xml`.
+- **Pantallas Compose:**
+  - `HomeScreen`: Tarjeta técnica, resumen, recuperación de borrador, avisos normativos.
+  - `PracticeScreen`: Orientación vertical bloqueada (D-03), HUD CameraX con `OverlayScrim`, superposición de esqueleto con 4dp y nodos de 6dp, banner temporal de 2500 ms y controles táctiles de 56 dp.
+  - `SummaryScreen`: Anillo de puntuación orientativa `ScoreRing`, tarjetas de movimientos `MovementCard` con chips de categoría.
+  - `MovementDetailScreen`: Instantánea de pose clave con esqueleto, métricas biomecánicas en barras visuales y observaciones mapeadas en español de México.
+- **ViewModels con Turbine:**
+  - `PracticeViewModel`, `HomeViewModel`, `SummaryViewModel`, `MovementDetailViewModel`.
+
+---
+
+## 9. Persistencia Local, Historial y Exportación (Fase F10)
+
+- **Base de Datos Room (`AppDatabase`):**
+  - Esquema SQLite versionado con exportación JSON en `app/schemas/`.
+  - Tabla `session`: Identificador UUID, fecha de inicio y fin, puntuación global orientativa, conteo de evaluables/parciales/no evaluables, modo y JSON de flags versionado.
+  - Tabla `movement_result`: Resultados por movimiento (1..18) con clave foránea en cascada `ON DELETE CASCADE` hacia `session(id)`, clave primaria compuesta `(sessionId, movementIndex)`, outcome, evaluabilidad, puntaje y JSONs estructurados de métricas y feedback.
+  - Tabla `session_draft`: Borrador único (`id = 1`) para recuperación de sesiones interrumpidas (SC-18, expiración 24h).
+  - Relación 1:N `SessionWithMovements` para consultas atómicas transaccionales.
+  - Prohibición de migraciones destructivas (`fallbackToDestructiveMigration` prohibido). Estrategia de respaldo preventivo de base de datos (`backupDatabaseFile()`) ante anomalías.
+- **DataStore Preferences (`UserSettingsRepository`):**
+  - Almacena de forma reactiva: `defaultCameraFacing` (FRONT/BACK), `voiceEnabled` (Boolean), `exigencyLevel` (RELAXED, NORMAL, STRICT), `strictMode` (Boolean) y `saveSnapshots` (Boolean).
+- **Servicio de Borrado Total SC-30 (`DataErasureService`):**
+  - Elimina de forma irreversible: base de datos Room, borradores, preferencias DataStore, instantáneas privadas en disco, reportes en caché y reseteo de la sesión activa en memoria, protegido con doble diálogo modal de confirmación destructiva.
+- **Exportación Segura (`SessionExporter`, RF-11):**
+  - Generación de reportes en texto plano `.txt` y documentos nativos `.pdf` (`PdfDocument`) conteniendo obligatoriamente los disclaimers normativos (`MSG_DISCLAIMER` y `MSG_UNVALIDATED`).
+  - Distribución a través de `FileProvider` con `FLAG_GRANT_READ_URI_PERMISSION` mediante el menú nativo del sistema Android (`Intent.ACTION_SEND`).
+
+
 

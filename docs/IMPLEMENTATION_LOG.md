@@ -247,47 +247,56 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F9 (Modo de práctica interactivo con superposición de esqueleto en tiempo real y UI en Jetpack Compose).
 
-## Sesión 2026-11-12 (Cierre Fase F9 - Interfaz de la sesión de práctica)
-- **Objetivo:** Implementar la experiencia completa de uso (Inicio, Encuadre/Calibración, Práctica guiada con orientación vertical bloqueada, Resumen y Detalle técnico del movimiento) conectando el `SessionEngine` de `:analysis` a la interfaz en Jetpack Compose, con estricto apego al diseño cerrado de la sección 14, tokens de color Material 3, tipografía, regla R-10 (100% textos en `strings.xml`), avisos normativos obligatorios, vistas previas Compose (@Preview) para todos los estados y pruebas de transición con Turbine.
+## Sesión 2026-11-12 (Cierre Fase F10 - Persistencia, historial y exportación)
+- **Objetivo:** Guardar y consultar sesiones y ajustes de forma local cumpliendo los contratos de la sección 12.10 (Room con SQLite, DataStore Preferences, exportación de esquemas JSON, pantalla de Historial, pantalla de Ajustes con borrado total irreversible SC-30, y exportación de resúmenes en texto y PDF con FileProvider).
 - **Archivos creados / modificados:**
-  - `app/src/main/res/values/strings.xml` (catálogo exhaustivo según 12.8, 14.5, 14.6 y 14.8, sin strings cableados en código).
-  - `app/src/main/java/tkd/apptkd/ui/theme/Color.kt` y `Theme.kt` (`ExtendedColors` para `resultCorrect`, `resultImprovable`, `resultIncorrect`, `resultNotEvaluable`, y `overlayScrim`).
-  - `app/src/main/java/tkd/apptkd/ui/theme/Type.kt` (escala tipográfica oficial de la sección 14.3).
-  - `app/src/main/java/tkd/apptkd/ui/navigation/Screen.kt` y `AppNavigation.kt` (ruta `MovementDetail` con argumento `movementIndex`).
-  - `app/src/main/java/tkd/apptkd/ui/components/`:
-    - `Buttons.kt` (`PrimaryButton`, `SecondaryButton`, respetando límite de 5 parámetros y 24dp pill shape).
-    - `ResultChip.kt` (chip de categoría visual con icono e indicador textual).
-    - `ScoreRing.kt` (anillo de puntuación circular con etiqueta "orientativo").
-    - `MovementTimeline.kt` (línea temporal de 18 segmentos con estados Pending, Current, Evaluated y Omitted).
-    - `MovementCard.kt` (tarjeta de desglose técnico con nombres en español/coreano, postura y chip de resultado).
-    - `TurnIndicator.kt` (flecha e indicación de ángulo de giro en grados).
-    - `SkeletonOverlay.kt` (superposición anatómica con trazo de 4dp, articulaciones de 6dp de radio, borde oscuro fino y líneas atenuadas/discontinuas para baja visibilidad).
-    - `GuidanceBanner.kt`, `StatusBanner.kt` y `MetricRow.kt` (barra visual de rango ideal).
-    - `ConfirmDialog.kt` (diálogos modales Material 3 para pausa y salida).
-    - `StateViews.kt` (`LoadingState`, `EmptyState`, `ErrorState`).
-    - `ComponentPreviews.kt` (vistas previas @Preview en temas Claro y Oscuro para todos los componentes).
-  - `app/src/main/java/tkd/apptkd/ui/screens/`:
-    - `HomeScreen.kt` (tarjeta de Taegeuk 1 Jang, 18 movimientos, última puntuación, tarjeta de borrador SC-18, aviso de fijación documental y disclaimer).
-    - `PracticeScreen.kt` (bloqueo de orientación vertical D-03 mediante `DisposableEffect`, vista previa CameraX, HUD con `OverlayScrim`, superposición de esqueleto, retroalimentación no bloqueante de 2500 ms y controles táctiles de 56 dp).
-    - `PracticeOverlays.kt` (encuadre silueta, progreso de calibración inmóvil, cuenta regresiva, diálogos de confirmación y pantallas de error).
-    - `SummaryScreen.kt` (anillo de puntuación, conteo evaluables/parciales/no evaluables, 18 tarjetas clicables y avisos normativos).
-    - `MovementDetailScreen.kt` (instantánea de la pose clave con esqueleto, cabecera de técnica, observaciones mapeadas en español de México y filas de métricas con barras visuales).
-  - Modelos y orquestación UI:
-    - `PracticeSessionHolder.kt` (gestión en memoria de resumen, borradores y última puntuación).
-    - `VoicePlayer.kt` (abstracción para lectura de voz opcional con `NoOpVoicePlayer` para pruebas).
-    - `AppModule.kt` (inyección Hilt de `PoomsaeDefinition` y `VoicePlayer`).
-    - `PracticeViewModel.kt` y `PracticeViewModelHandlers.kt` (mapeo reactivo de `SessionEngine` a Compose sin exceder límites de complejidad ciclomática ni número de métodos).
-    - `HomeViewModel.kt`, `SummaryViewModel.kt` y `MovementDetailViewModel.kt`.
-  - Pruebas unitarias de ViewModels con Turbine:
-    - `app/src/test/java/tkd/apptkd/ui/HomeViewModelTest.kt`
-    - `app/src/test/java/tkd/apptkd/ui/PracticeViewModelTest.kt`
-    - `app/src/test/java/tkd/apptkd/ui/SummaryViewModelTest.kt`
-    - `app/src/test/java/tkd/apptkd/ui/MovementDetailViewModelTest.kt`
-    - `app/src/test/java/tkd/apptkd/ui/NavigationTest.kt`
+  - `gradle/libs.versions.toml` y `app/build.gradle.kts`:
+    - Añadidas dependencias de Room 2.8.5 (`room-runtime`, `room-ktx`, `room-compiler` vía KSP).
+    - Añadida dependencia de DataStore Preferences 1.3.0.
+    - Añadida dependencia de Robolectric 4.14.1 y AndroidX Test Core 1.6.1.
+    - Configurado exportación de esquema Room KSP en `app/schemas` y añadido a assets de test.
+    - Configurado `testOptions.unitTests.isIncludeAndroidResources = true`.
+  - Capa de Datos Room (`app/src/main/java/tkd/apptkd/data/room/`):
+    - `SessionEntity.kt`: Tabla `session` con índice en `startedAtMs DESC`, campos de configuración, modo, puntuación y conteos.
+    - `MovementResultEntity.kt`: Tabla `movement_result` con clave primaria compuesta `(sessionId, movementIndex)` y clave foránea en cascada hacia `session(id)`.
+    - `SessionDraftEntity.kt`: Tabla `session_draft` con clave primaria fija `id = 1` y timestamp para caducidad (24h).
+    - `SessionWithMovements.kt`: Clase de relación 1:N entre `SessionEntity` y `MovementResultEntity`.
+    - `SerializationDtos.kt`: DTOs versionados (`FlagsJsonContainer`, `FeedbackJsonContainer`, `MetricsJsonContainer`) para serialización JSON segura en columnas TEXT.
+    - `SessionDao.kt`: Consultas CRUD reactivas con `Flow<List<SessionEntity>>` e inserción atómica transaccional `@Transaction`.
+    - `SessionDraftDao.kt`: Gestión del borrador único de sesión.
+    - `DatabaseMigrations.kt`: Migración `MIGRATION_1_2` y utilidad de respaldo `backupDatabaseFile()` ante fallos de migración (prohibido `fallbackToDestructiveMigration` según 8.1).
+    - `AppDatabase.kt`: Base de datos Room con esquema exportado en `app/schemas/tkd.apptkd.data.room.AppDatabase/1.json`.
+    - `SessionEntityMapper.kt`: Mapeo bidireccional entre `SessionSummaryData` y entidades de Room mediante `SessionPersistParams`.
+  - Preferencias y Repositorios (`app/src/main/java/tkd/apptkd/data/`):
+    - `UserSettings.kt`: Modelo inmutable de preferencias (`CameraFacing`, `voiceEnabled`, `ExigencyLevel`, `strictMode`, `saveSnapshots`).
+    - `UserSettingsRepository.kt`: Encapsulación reactiva sobre DataStore Preferences.
+    - `SessionRepository.kt`: Repositorio central de persistencia de sesiones completas e incompletas, borradores y borrado total.
+    - `DataErasureService.kt`: Implementación del borrado total irreversible (SC-30) que elimina BD Room, borradores, DataStore, fotos/archivos y resetea memoria.
+  - Exportación y FileProvider:
+    - `SessionExporter.kt`: Generación de reportes en texto plano y PDF (`PdfDocument`) con inclusión obligatoria de avisos normativos (`MSG_DISCLAIMER` y `MSG_UNVALIDATED`).
+    - `app/src/main/res/xml/file_paths.xml`: Rutas seguras de FileProvider para exports y cache.
+    - `AndroidManifest.xml`: Registro de `androidx.core.content.FileProvider`.
+  - Interfaz de Usuario (`app/src/main/java/tkd/apptkd/ui/`):
+    - `HistoryScreen.kt` & `HistoryViewModel.kt`: Lista reactiva de sesiones, tarjeta resumen con promedio, badges de estado y opciones de exportar/eliminar.
+    - `SettingsScreen.kt` & `SettingsViewModel.kt`: Secciones de Ajustes, información de versión y botón destructivo con doble confirmación (SC-30).
+    - `SettingsRow.kt`: Componentes reutilizables `SettingsSwitchRow`, `SettingsSelectionRow` y `SettingsActionRow`.
+    - `strings.xml`: Catálogo completo de textos para Historial, Ajustes y diálogos según regla R-10.
+    - `AppNavigation.kt`: Integración de la ruta `Screen.History`.
+    - `SummaryScreen.kt`: Integración de exportación PDF mediante `SessionExporter` y menú contextual de compartir del sistema.
+  - Pruebas Unitarias Automatizadas (20 nuevas pruebas, 138 totales):
+    - `RoomDatabaseTest.kt` (4 pruebas: CRUD, borrado en cascada, ciclo de borrador, wipe).
+    - `DatabaseMigrationTest.kt` (3 pruebas: ejecución SQL, backup ante archivo existente/inexistente).
+    - `UserSettingsRepositoryTest.kt` (4 pruebas: valores por defecto, conmutación de cámara/voz, exigencia y clearAll).
+    - `DataErasureServiceTest.kt` (1 prueba: borrado total integral SC-30).
+    - `SessionExporterTest.kt` (3 pruebas: exportación de texto con disclaimers, exportación PDF y share intent con `ShadowPdfDocument`).
+    - `HistoryViewModelTest.kt` (3 pruebas: emisión de sesiones, cálculo de promedio, eliminación y carga de resumen).
+    - `SettingsViewModelTest.kt` (2 pruebas: actualización de preferencias y callback de borrado total).
 - **Pruebas ejecutadas:**
-  - `./gradlew assembleDebug testDebugUnitTest :analysis:test detekt ktlintCheck` (OK — 118/118 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint).
-  - `bash scripts/verify.sh` (OK — todas las verificaciones en verde).
+  - `./gradlew assembleDebug testDebugUnitTest :analysis:test detekt ktlintCheck` (OK — 138/138 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — suite de verificación local completada en verde).
+  - Exportación de esquema Room `1.json` validada en `app/schemas/tkd.apptkd.data.room.AppDatabase/1.json`.
 - **Decisiones pendientes:** Ninguna.
-- **Siguiente paso:** Proceder a Fase F10 (Persistencia de historial de sesiones y analítica local con Room).
+- **Siguiente paso:** Proceder a Fase F11 (Harness de prueba sintética end-to-end, grabación y reproducción de sesiones).
+
 
 

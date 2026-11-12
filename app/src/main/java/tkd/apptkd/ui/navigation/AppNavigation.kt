@@ -70,6 +70,8 @@ fun AppNavigation(
         composable(Screen.History.route) {
             HistoryScreen(
                 onNavigateBack = { navController.popBackStack() },
+                onNavigateToSummary = { navController.navigate(Screen.Summary.route) },
+                onStartPractice = { navController.navigate(Screen.Practice.route) },
             )
         }
         composable(Screen.Settings.route) {

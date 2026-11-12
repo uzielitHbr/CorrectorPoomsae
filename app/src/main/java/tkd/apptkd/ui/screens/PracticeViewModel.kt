@@ -25,6 +25,8 @@ import mx.taekwondo.poomsae.analysis.segmentation.SessionEvent
 import mx.taekwondo.poomsae.analysis.segmentation.SessionState
 import tkd.apptkd.R
 import tkd.apptkd.camera.CameraFacing
+import tkd.apptkd.data.datastore.UserSettingsRepository
+import tkd.apptkd.data.repository.SessionRepository
 import tkd.apptkd.ui.FeedbackMessageMapper
 import tkd.apptkd.ui.PracticeSessionHolder
 import tkd.apptkd.ui.SessionSummaryData
@@ -94,6 +96,8 @@ class PracticeViewModel(
     private val sessionHolder: PracticeSessionHolder,
     private val voicePlayer: VoicePlayer,
     internal val engine: SessionEngine,
+    private val sessionRepository: SessionRepository? = null,
+    private val userSettingsRepository: UserSettingsRepository? = null,
 ) : ViewModel() {
 
     @Inject
@@ -101,7 +105,29 @@ class PracticeViewModel(
         definition: PoomsaeDefinition,
         sessionHolder: PracticeSessionHolder,
         voicePlayer: VoicePlayer,
-    ) : this(definition, sessionHolder, voicePlayer, SessionEngine(definition))
+        sessionRepository: SessionRepository,
+        userSettingsRepository: UserSettingsRepository,
+    ) : this(
+        definition = definition,
+        sessionHolder = sessionHolder,
+        voicePlayer = voicePlayer,
+        engine = SessionEngine(definition),
+        sessionRepository = sessionRepository,
+        userSettingsRepository = userSettingsRepository,
+    )
+
+    constructor(
+        definition: PoomsaeDefinition,
+        sessionHolder: PracticeSessionHolder,
+        voicePlayer: VoicePlayer,
+    ) : this(
+        definition = definition,
+        sessionHolder = sessionHolder,
+        voicePlayer = voicePlayer,
+        engine = SessionEngine(definition),
+        sessionRepository = null,
+        userSettingsRepository = null,
+    )
 
     private val _uiState = MutableStateFlow(
         PracticeUiState(
@@ -116,6 +142,22 @@ class PracticeViewModel(
     init {
         observeEngineState()
         observeEngineEvents()
+        observeUserSettings()
+    }
+
+    private fun observeUserSettings() {
+        userSettingsRepository?.let { repo ->
+            viewModelScope.launch {
+                repo.userSettingsFlow.collect { settings ->
+                    _uiState.update {
+                        it.copy(
+                            isVoiceEnabled = settings.voiceEnabled,
+                            cameraFacing = settings.defaultCameraFacing,
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun onAction(action: PracticeAction) {
@@ -125,6 +167,17 @@ class PracticeViewModel(
                 uiState = _uiState,
                 currentDismissJob = feedbackDismissJob,
             )
+        }
+        if (action is PracticeAction.SaveDraftAndExit) {
+            val runningStep = _uiState.value.step as? PracticeStep.Running
+            val draftIdx = runningStep?.movementIndex ?: 1
+            viewModelScope.launch {
+                sessionRepository?.saveDraft(draftIdx, "{}")
+            }
+        } else if (action is PracticeAction.DiscardSession) {
+            viewModelScope.launch {
+                sessionRepository?.clearDraft()
+            }
         }
     }
 
@@ -160,6 +213,8 @@ class PracticeViewModel(
                         snapshots = snapshots,
                         sessionHolder = sessionHolder,
                         uiState = _uiState,
+                        sessionRepository = sessionRepository,
+                        scope = viewModelScope,
                     ),
                 )
             }
@@ -195,6 +250,8 @@ internal data class SessionFinishContext(
     val snapshots: Map<Int, PoseFrame>,
     val sessionHolder: PracticeSessionHolder,
     val uiState: MutableStateFlow<PracticeUiState>,
+    val sessionRepository: SessionRepository? = null,
+    val scope: CoroutineScope? = null,
 )
 
 internal object PracticeViewModelHandlers {
@@ -284,6 +341,12 @@ internal object PracticeViewModelHandlers {
         )
         context.sessionHolder.setSummary(summary)
         context.uiState.update { it.copy(step = PracticeStep.Finished(evaluations, globalScore)) }
+        context.scope?.launch {
+            context.sessionRepository?.saveCompletedSession(
+                summaryData = summary,
+                cameraFacing = context.uiState.value.cameraFacing.name,
+            )
+        }
     }
 
     fun showFeedback(

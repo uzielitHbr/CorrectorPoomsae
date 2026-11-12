@@ -155,3 +155,35 @@ internal fun ErrorStatePreview() {
         )
     }
 }
+
+@Preview(name = "Components - Settings Rows (Light)", showBackground = true)
+@Composable
+internal fun SettingsRowsPreviewLight() {
+    TaegeukCoachTheme(darkTheme = false) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            SettingsSwitchRow(
+                title = "Lectura por voz",
+                description = "Anunciar técnicas por audio",
+                checked = true,
+                onCheckedChange = {},
+            )
+            SettingsSelectionRow(
+                title = "Nivel de exigencia",
+                description = "Escala de tolerancia de bandas",
+                selectedOption = "Normal",
+                onClick = {},
+            )
+            SettingsActionRow(
+                title = "Borrar todos los datos",
+                description = "Eliminar todo el historial",
+                onClick = {},
+                isDestructive = true,
+            )
+        }
+    }
+}

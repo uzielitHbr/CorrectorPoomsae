@@ -153,4 +153,53 @@
     <string name="FB_KICK_NOT_FORWARD">Dirige la patada recta hacia el frente.</string>
     <string name="FB_TURN_ANGLE_INACCURATE">Ajusta el ángulo del giro hacia la dirección correcta.</string>
     <string name="FB_HEADING_DRIFT_EXCESSIVE">Corrige la orientación de tu cuerpo hacia el frente de la forma.</string>
+
+    <!-- Historial y Estadísticas (F10, Sección 14.8) -->
+    <string name="history_title">Historial de prácticas</string>
+    <string name="history_total_sessions">%1$d prácticas registradas</string>
+    <string name="history_avg_score">Promedio: %1$.1f (orient.)</string>
+    <string name="history_no_completed">Sin prácticas completadas aún</string>
+    <string name="history_session_incomplete_badge">Incompleta</string>
+    <string name="history_session_video_badge">Video</string>
+    <string name="history_delete_session">Eliminar práctica</string>
+    <string name="history_delete_confirm_title">¿Eliminar esta práctica?</string>
+    <string name="history_delete_confirm_msg">Esta práctica se borrará permanentemente de tu historial.</string>
+    <string name="history_export_session">Exportar resumen</string>
+
+    <!-- Ajustes y Preferencias (F10, Sección 14.8 y RF-12) -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_camera_facing_title">Cámara predeterminada</string>
+    <string name="settings_camera_facing_desc">Selecciona la lente a usar al iniciar una práctica</string>
+    <string name="settings_camera_front">Frontal (espejo)</string>
+    <string name="settings_camera_back">Trasera</string>
+    <string name="settings_voice_title">Lectura por voz</string>
+    <string name="settings_voice_desc">Anunciar las técnicas e instrucciones por audio</string>
+    <string name="settings_exigency_title">Nivel de exigencia</string>
+    <string name="settings_exigency_desc">Escala la tolerancia de las bandas técnicas ideales</string>
+    <string name="settings_exigency_relaxed">Relajado (bandas amplias)</string>
+    <string name="settings_exigency_normal">Normal (estándar)</string>
+    <string name="settings_exigency_strict">Estricto (alta precisión)</string>
+    <string name="settings_strict_mode_title">Modo estricto</string>
+    <string name="settings_strict_mode_desc">Exige repetir el movimiento si se detecta incorrecto</string>
+    <string name="settings_save_snapshots_title">Guardar capturas clave</string>
+    <string name="settings_save_snapshots_desc">Guarda las poses congeladas en el almacenamiento privado del teléfono</string>
+    <string name="settings_about_title">Acerca de</string>
+    <string name="settings_about_version">Versión %1$s (%2$s)</string>
+    <string name="settings_about_privacy_title">Privacidad</string>
+    <string name="settings_about_privacy_desc">Todo el análisis se procesa en el dispositivo. No se envían imágenes ni videos a ningún servidor externo.</string>
+    <string name="settings_danger_zone">Zona de riesgo</string>
+    <string name="settings_delete_all_title">Borrado total de datos</string>
+    <string name="settings_delete_all_desc">Elimina de forma irreversible todas las prácticas, capturas y ajustes</string>
+    <string name="settings_delete_all_confirm_title">¿Borrar todos los datos?</string>
+    <string name="settings_delete_all_confirm_btn">Borrar todo</string>
+    <string name="settings_delete_all_success">Todos los datos locales han sido eliminados.</string>
+
+    <!-- Exportación y Migración (F10, Sección 8.1 y 14.8) -->
+    <string name="export_title">Exportar resumen</string>
+    <string name="export_as_text">Exportar texto (.txt)</string>
+    <string name="export_as_pdf">Exportar PDF (.pdf)</string>
+    <string name="export_share_chooser_title">Compartir resumen de práctica</string>
+    <string name="db_migration_error_title">Error en la base de datos</string>
+    <string name="db_migration_error_message">Se produjo un error al actualizar los datos guardados. Se ha creado una copia de seguridad en el dispositivo. ¿Deseas restablecer los datos locales para continuar?</string>
+    <string name="btn_reset_local_data">Restablecer datos locales</string>
 </resources>

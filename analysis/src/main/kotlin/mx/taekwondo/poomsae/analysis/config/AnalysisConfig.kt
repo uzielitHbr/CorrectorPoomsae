@@ -265,4 +265,28 @@ object AnalysisConfig {
      * Status: PENDIENTE_CALIBRAR.
      */
     const val STRICT_MAX_ATTEMPTS: Int = 3
+
+    /**
+     * Band scaling factor g for RELAXED exigency level (wider bands, Section 13.8).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val EXIGENCY_FACTOR_RELAXED: Double = 1.25
+
+    /**
+     * Band scaling factor g for NORMAL exigency level (default band width).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val EXIGENCY_FACTOR_NORMAL: Double = 1.0
+
+    /**
+     * Band scaling factor g for STRICT exigency level (narrower bands, Section 13.8).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val EXIGENCY_FACTOR_STRICT: Double = 0.80
+
+    /**
+     * Maximum age in hours for an interrupted session draft to remain resumable (D-06, SC-18).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val DRAFT_MAX_AGE_HOURS: Long = 24L
 }

@@ -5,7 +5,37 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
-## [0.9.0] - 2026-11-12
+## [0.10.0] - 2026-11-12
+### Added
+- **Fase F10 (Persistencia, historial y exportación):**
+  - Implementación de la base de datos local **Room** (`AppDatabase`) cumpliendo los contratos de la sección 12.10:
+    - Entidad `SessionEntity` (tabla `session` con índice en `startedAtMs DESC`, campos de puntuación, estado, configuración y JSONs de flags).
+    - Entidad `MovementResultEntity` (tabla `movement_result` con clave primaria compuesta `(sessionId, movementIndex)` y clave foránea con eliminación en cascada hacia `session(id)`).
+    - Entidad `SessionDraftEntity` (tabla `session_draft` con id fijo 1 para recuperación de sesiones interrumpidas SC-18).
+    - Objeto de relación 1:N `SessionWithMovements`.
+    - DTOs versionados con `schemaVersion = 1` para serialización JSON segura (`FlagsJsonContainer`, `FeedbackJsonContainer`, `MetricsJsonContainer`).
+    - DAO reactivo `SessionDao` con `Flow<List<SessionEntity>>` e inserción atómica `@Transaction`.
+    - `SessionDraftDao` para persistencia de borradores.
+    - Estrategia de migración `DatabaseMigrations` con `MIGRATION_1_2` y método de respaldo `backupDatabaseFile()` ante fallos de migración (prohibición estricta de `fallbackToDestructiveMigration` según sección 8.1).
+    - Exportación de esquema Room KSP en `app/schemas/tkd.apptkd.data.room.AppDatabase/1.json`.
+  - Persistencia de preferencias de usuario con **Jetpack DataStore Preferences** (`UserSettingsRepository`):
+    - Parámetros: orientación de cámara predeterminada (`defaultCameraFacing`), lectura por voz (`voiceEnabled`), nivel de exigencia (`exigencyLevel`: RELAXED, NORMAL, STRICT), modo estricto (`strictMode`) y guardado de capturas (`saveSnapshots`).
+  - Repositorio central de persistencia `SessionRepository`:
+    - Guardado de sesiones completadas (`saveCompletedSession`) e incompletas (`saveIncompleteSession`).
+    - Consulta de sesión con resultados (`getSessionWithMovements`), borrado individual y total.
+  - Servicio de **Borrado Total de Datos** (`DataErasureService`, SC-30):
+    - Eliminación completa e irreversible de bases de datos Room, borradores, preferencias en DataStore, capturas privadas en disco, archivos temporales y reseteo de la memoria activa.
+  - Servicio de **Exportación de Sesiones** (`SessionExporter`, RF-11):
+    - Exportación a texto plano estructurado y documentos PDF nativos (`PdfDocument`) con inclusión obligatoria de disclaimers normativos (`MSG_DISCLAIMER` y `MSG_UNVALIDATED`).
+    - Creación de intents seguros mediante `FileProvider` con `FLAG_GRANT_READ_URI_PERMISSION`.
+  - Interfaz de usuario en Jetpack Compose (Sección 14.8):
+    - **Pantalla de Historial (`HistoryScreen`)**: Tarjeta de resumen con promedio histórico y total de prácticas, listado de sesiones con fecha, ID, badges de estado ("Incompleta", "Estricto"), chip de categoría/puntuación, opciones de exportación individual y borrado con diálogo de confirmación.
+    - **Pantalla de Ajustes (`SettingsScreen`)**: Configuración interactiva de cámara, voz, exigencia cíclica, modo estricto, capturas, sección de información de versión y botón de borrado total irreversible con diálogo modal destructivo (SC-30).
+    - Componentes `SettingsRow.kt` (`SettingsSwitchRow`, `SettingsSelectionRow`, `SettingsActionRow`).
+    - Cableado de exportación y menú compartir en `SummaryScreen`.
+  - Suite de 20 nuevas pruebas unitarias automatizadas con Robolectric y Turbine (138 pruebas totales en verde en el proyecto):
+    - `RoomDatabaseTest`, `DatabaseMigrationTest`, `UserSettingsRepositoryTest`, `DataErasureServiceTest`, `SessionExporterTest` (con `ShadowPdfDocument`), `HistoryViewModelTest`, `SettingsViewModelTest`.
+    - 0 incidencias Detekt y 0 violaciones ktlintCheck.
 ### Added
 - **Fase F9 (Interfaz de la sesión de práctica):**
   - Implementación de la experiencia interactiva completa de práctica conectando `SessionEngine` a Jetpack Compose con Material 3.
