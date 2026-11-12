@@ -107,4 +107,79 @@ object AnalysisConfig {
 
     /** Milliseconds per second conversion factor. */
     const val MILLIS_PER_SECOND: Double = 1000.0
+
+    // -------------------------------------------------------------------------
+    // Frame Quality Gate Parameters — PENDIENTE_CALIBRAR (F6)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Minimum normalized distance margin `[0.0, 0.5]` from image borders for key joints.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val FRAME_MARGIN_RATIO: Double = 0.05
+
+    /**
+     * Minimum torso height ratio relative to image frame height (detects person too far).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val TORSO_MIN_HEIGHT_RATIO: Double = 0.15
+
+    /**
+     * Maximum torso height ratio relative to image frame height (detects person too close).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val TORSO_MAX_HEIGHT_RATIO: Double = 0.65
+
+    // -------------------------------------------------------------------------
+    // Body Profile Calibration Parameters — PENDIENTE_CALIBRAR (F6 / F12)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Minimum consecutive stable frames required to complete user calibration (Section 13.3).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val CAL_MIN_FRAMES: Int = 15
+
+    /**
+     * Maximum relative median absolute deviation (MAD / median) allowed across body segments.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val CAL_MAX_REL_MAD: Double = 0.15
+
+    /**
+     * Maximum relative variation of hip axis length against calibrated distance.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val HIP_AXIS_REL_TOL: Double = 0.35
+
+    // -------------------------------------------------------------------------
+    // Evaluability Model & Scoring Weights — PENDIENTE_CALIBRAR (F7 / Section 13.7)
+    // -------------------------------------------------------------------------
+
+    /** Coverage threshold of total metric weights to classify a movement as EVALUABLE. */
+    const val FULL_COVERAGE: Double = 0.80
+
+    /** Minimum coverage threshold of total metric weights to classify as PARTIALLY_EVALUABLE. */
+    const val MIN_COVERAGE: Double = 0.50
+
+    /** Weight assigned to critical biomechanical metrics. Status: PENDIENTE_CALIBRAR. */
+    const val WEIGHT_CRITICAL: Double = 2.0
+
+    /** Weight assigned to secondary biomechanical metrics. Status: PENDIENTE_CALIBRAR. */
+    const val WEIGHT_SECONDARY: Double = 1.0
+
+    /** Flag indicating whether partially evaluable movements count toward global score. */
+    const val INCLUDE_PARTIAL_IN_GLOBAL: Boolean = false
+
+    /** Minimum score threshold for category CORRECT. Status: PENDIENTE_CALIBRAR. */
+    const val T_CORRECT: Double = 75.0
+
+    /** Minimum score threshold for category IMPROVABLE (below is INCORRECT). Status: PENDIENTE_CALIBRAR. */
+    const val T_IMPROVABLE: Double = 50.0
+
+    /** Maximum allowed heading jump between consecutive frames before invalidating (degrees). */
+    const val PSI_JUMP_DEG: Double = 60.0
+
+    /** Minimum horizontal projection ratio of punch vector relative to arm length (AR-05). */
+    const val MIN_HORIZ_RATIO: Double = 0.20
 }
