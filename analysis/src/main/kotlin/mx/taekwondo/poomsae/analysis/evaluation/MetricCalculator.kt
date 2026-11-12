@@ -34,19 +34,40 @@ object MetricCalculator {
         frame: PoseFrame,
         movement: Movement,
         profile: BodyProfile,
-        window: List<PoseFrame> = listOf(frame),
-        measuredTurnDeg: Double? = null,
+        options: EvaluationOptions,
     ): Map<MetricId, MetricResult> =
         buildMap {
+            val window = options.window.ifEmpty { listOf(frame) }
             putAll(StanceMetrics.calculate(frame, movement.stance, profile, window))
-            putAll(ArmTechniqueMetrics.calculate(frame, movement.technique, profile))
+            val techFrame =
+                if (movement.technique.type == TechniqueType.AP_CHAGI && options.peakFrame != null) {
+                    options.peakFrame
+                } else {
+                    frame
+                }
+            putAll(ArmTechniqueMetrics.calculate(techFrame, movement.technique, profile))
             movement.extra?.let { extra ->
                 putAll(ArmTechniqueMetrics.calculate(frame, extra, profile))
             }
-            if (movement.turnDegrees != 0 || measuredTurnDeg != null) {
-                putAll(TurnMetrics.calculate(measuredTurnDeg, movement.expectedTurnDeg.toDouble()))
+            if (movement.turnDegrees != 0 || options.measuredTurnDeg != null) {
+                putAll(TurnMetrics.calculate(options.measuredTurnDeg, movement.expectedTurnDeg.toDouble()))
             }
         }
+
+    /** Sobrecarga para cálculo directo con ventana temporal o rumbo medido. */
+    fun calculateMetrics(
+        frame: PoseFrame,
+        movement: Movement,
+        profile: BodyProfile,
+        window: List<PoseFrame> = listOf(frame),
+        measuredTurnDeg: Double? = null,
+    ): Map<MetricId, MetricResult> =
+        calculateMetrics(
+            frame = frame,
+            movement = movement,
+            profile = profile,
+            options = EvaluationOptions(window = window, measuredTurnDeg = measuredTurnDeg),
+        )
 
     internal fun sideJoint(
         side: Side,

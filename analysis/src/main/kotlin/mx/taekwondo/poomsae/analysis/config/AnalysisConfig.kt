@@ -182,4 +182,81 @@ object AnalysisConfig {
 
     /** Minimum horizontal projection ratio of punch vector relative to arm length (AR-05). */
     const val MIN_HORIZ_RATIO: Double = 0.20
+
+    // -------------------------------------------------------------------------
+    // Motion Segmentation & Temporal State Machine — PENDIENTE_CALIBRAR (F8 / Section 12.3)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Minimum joint speed threshold (in torso heights per second) to trigger movement start.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val V_START: Double = 0.80
+
+    /**
+     * Minimum duration (milliseconds) joint speed must stay above V_START to confirm movement start.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_START_MS: Long = 100L
+
+    /**
+     * Lockout window (milliseconds) following movement evaluation before next start can be detected,
+     * preventing movement deceleration from triggering false starts.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_LOCKOUT_MS: Long = 400L
+
+    /**
+     * Maximum joint speed threshold (in torso heights per second) below which a joint is considered still.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val V_STILL: Double = 0.25
+
+    /**
+     * Minimum continuous duration (milliseconds) joint speed must remain below V_STILL to confirm hold/completion.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_HOLD_MS: Long = 600L
+
+    /**
+     * Duration (milliseconds) of evaluation window at the tail of the hold period used for static metrics median.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_EVAL_WINDOW_MS: Long = 300L
+
+    /**
+     * Half-width of temporal window around kick peak (± milliseconds) for kick metric extraction.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_PEAK_WINDOW_MS: Long = 150L
+
+    /**
+     * Required duration (milliseconds) in stable junbi seogi ready posture before starting session.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_READY_MS: Long = 1000L
+
+    /**
+     * Inactivity timeout (milliseconds) waiting for movement start before prompting user about omission (SC-13).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_MOVEMENT_TIMEOUT_MS: Long = 8000L
+
+    /**
+     * Maximum duration (milliseconds) for a brief tracking loss before treating it as prolonged loss (SC-06/SC-07).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_LOSS_SHORT_MS: Long = 1000L
+
+    /**
+     * Required duration (milliseconds) of recovered stable frames before resuming session after tracking loss.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_RECOVER_MS: Long = 1500L
+
+    /**
+     * Maximum allowed attempts in strict practice mode before marking movement failed (SC-11).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val STRICT_MAX_ATTEMPTS: Int = 3
 }

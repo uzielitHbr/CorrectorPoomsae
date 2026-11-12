@@ -223,4 +223,28 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F8 (Segmentación temporal y secuenciación guiada con máquina de estados).
 
+---
+
+## Sesión 7 — Fase F8: Segmentación temporal y secuenciación guiada
+- **Fecha:** 2026-11-12
+- **Objetivo:** Implementar la máquina de estados temporal y el motor de sesión guiada (`MotionSegmenter`, `SessionEngine`, `JointSpeedCalculator`) según las especificaciones de las Secciones 12.3, 12.4, 12.5, 12.9.2 y 13.5. Detectar inicio de movimiento, picos en patadas (`PEAK_THEN_HOLD`), momentos de sostén articular (`Holding`), calcular el rumbo corporal acumulado $\tau_{\text{meas}}(n)$ para confirmar giros esperados, garantizar la no confusión entre movimientos sucesivos con misma posición (5-6 y 11-12), y proveer mecanismos completos de recuperación SC-13 (pausar, reanudar, repetir, omitir, y reanudación por pérdida de tracking).
+- **Artefactos creados/modificados:**
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/config/AnalysisConfig.kt` (incorporación de umbrales `V_START = 0.80`, `T_START_MS = 100L`, `T_LOCKOUT_MS = 400L`, `V_STILL = 0.25`, `T_HOLD_MS = 600L`, `T_EVAL_WINDOW_MS = 300L`, `T_PEAK_WINDOW_MS = 150L`, `T_READY_MS = 1000L`, `T_MOVEMENT_TIMEOUT_MS = 8000L`, `T_LOSS_SHORT_MS = 1000L`, `T_RECOVER_MS = 1500L`, `STRICT_MAX_ATTEMPTS = 3`, todos declarados formalmente como `PENDIENTE_CALIBRAR`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/segmentation/SessionModels.kt` (contratos formales de sesión: `PauseReason`, `MovementSubState`, `SessionState`, `SessionCommand`, `SegmenterEvent`, `SessionEvent`).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/segmentation/JointSpeedCalculator.kt` (cálculo de velocidad articular instantánea normalizada por tiempo y altura del torso en imagen en torsos/segundo según Sección 12.3).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/segmentation/MotionSegmenter.kt` (máquina de estados de segmentación temporal con monitoreo de articulaciones activas, lockout de 400 ms, ventana de sostén, detección de picos en patadas, sospecha de omisión y tracking loss).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/segmentation/SessionEngine.kt` (motor integral de sesión con flujos reactivos `StateFlow<SessionState>` y `SharedFlow<SessionEvent>`, despacho de comandos `SessionCommand`, ciclo de vida completo y evaluador en tiempo real).
+  - `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MetricCalculator.kt` y `analysis/src/main/kotlin/mx/taekwondo/poomsae/analysis/evaluation/MovementEvaluator.kt` (soporte backward-compatible para evaluación con `peakFrame` en modo `PEAK_THEN_HOLD`).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/testutil/SyntheticPoomsaeSequenceGenerator.kt` (generador determinista de secuencias sintéticas ruidosas para los 18 movimientos y casos de esquina).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/segmentation/JointSpeedCalculatorTest.kt` (pruebas de cálculo de velocidad articular, invariancia a distancia y casos degenerados).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/segmentation/MotionSegmenterTest.kt` (pruebas de transición, sostén, patadas con pico, no confusión en 5-6 y 11-12, timeouts y tracking).
+  - `analysis/src/test/kotlin/mx/taekwondo/poomsae/analysis/segmentation/SessionEngineTest.kt` (recorrido de los 18 movimientos de principio a fin sin interbloqueos, recuperación SC-13, pausa/reanudación, omisión, repetición y ciclo de vida).
+  - `docs/PROJECT_STATUS.md`, `docs/TEST_RESULTS.md`, `CHANGELOG.md`.
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleDebug testDebugUnitTest :analysis:test :analysis:jacocoTestReport detekt ktlintCheck` (OK — 86/86 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — suite de verificación local completada en verde).
+  - Cobertura de líneas en `:analysis`: Global = 93.03% (2,056/2,210), `segmentation` = 91.02% (403/443), `evaluation` = 89.79% (510/568), superando holgadamente el requisito de >= 85%.
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F9 (Modo de práctica interactivo con superposición de esqueleto en tiempo real y UI en Jetpack Compose).
+
 

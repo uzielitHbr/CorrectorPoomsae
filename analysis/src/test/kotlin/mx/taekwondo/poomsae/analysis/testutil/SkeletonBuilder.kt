@@ -61,6 +61,17 @@ class SkeletonBuilder {
         return this
     }
 
+    fun clone(): SkeletonBuilder {
+        val copy = SkeletonBuilder()
+        for ((joint, pos) in worldJoints) {
+            copy.setJointPosition(joint, pos)
+        }
+        for ((joint, vis) in jointVisibilities) {
+            copy.setJointVisibility(joint, vis)
+        }
+        return copy
+    }
+
     /** Configura el paso (separación longitudinal y lateral de tobillos) y alinea rodillas. */
     fun setStanceStep(
         frontLegLeft: Boolean,

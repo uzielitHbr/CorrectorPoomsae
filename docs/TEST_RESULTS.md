@@ -17,6 +17,7 @@
 | **F5** | 2026-11-12 | Pruebas unitarias `MediaPipePoseAdapterTest` (9 tests), modelo Lite en assets con licencia Apache 2.0, proyección de esqueleto Compose `PoseOverlay`, Detekt y ktlint | **PASS (Verde)** | N/A (Módulo `:app`) | Mapeo riguroso de las 17 articulaciones (RIGHT_WRIST verificado), timestamps estrictamente crecientes (Sección 12.9.1), descarte atómico de cuadros y documentación de experimentos E1, E2 y E3 en `docs/`. |
 | **F6** | 2026-11-12 | Pruebas unitarias `FrameQualityGateTest` (4 tests), `BodyProfileCalibratorTest` (3 tests), Detekt y ktlintCheck | **PASS (Verde)** | `quality`: 91.86% (203/221) | Validación de compuerta de calidad (rechazo por encuadre incompleto, distancia inadecuada con MSG_FRAME_TOO_CLOSE/FAR, bordes cortados) y calibración antropométrica con ráfaga estable y mediana robusta MAD/Mediana <= CAL_MAX_REL_MAD. |
 | **F7** | 2026-11-12 | Pruebas unitarias `MovementEvaluatorTest` (6 tests), `MetricCalculatorTest` (9 tests), `FeedbackMessageMapperTest` (1 test), Detekt y ktlintCheck | **PASS (Verde)** | `evaluation`: 89.79% (475/529)<br>`geometry`: 96.03%<br>`signal`: 98.09%<br>`poomsae`: 89.19%<br>**Global `:analysis`:** 92.25% (1618/1754) | Implementación de las 21 métricas biomecánicas (13.4), bandas de puntuación 0..100 (13.8), 27 FeedbackCodes en español, y modelo de evaluabilidad de 13.7 (evaluable, parcialmente evaluable, no evaluable, incorrecto) verificado con SkeletonBuilder para monotonía, simetría y límites críticos. |
+| **F8** | 2026-11-12 | Pruebas unitarias `JointSpeedCalculatorTest` (5 tests), `MotionSegmenterTest` (5 tests), `SessionEngineTest` (7 tests), regresión completa (`scripts/verify.sh`), Detekt y ktlintCheck | **PASS (Verde)** | `segmentation`: 91.02% (403/443)<br>`evaluation`: 89.79%<br>`geometry`: 96.03%<br>`quality`: 91.86%<br>**Global `:analysis`:** 93.03% (2056/2210) | Segmentación temporal con velocidad articular adimensional en torsos/segundo (12.3), detección de inicio y ventana de sostén (600 ms), detección de picos en patadas (14 y 16), no confusión en posiciones consecutivas sin movimiento de pies (5-6 y 11-12), mecanismos de recuperación SC-13 (pausa, repetición, omisión y pérdida/recuperación de tracking) y recorrido de los 18 movimientos sin interbloqueos. |
 
 ---
 
@@ -182,5 +183,52 @@
 ### Test T-F5-03: Regresión Completa del Proyecto
 - **Comando:** `./gradlew assembleDebug test detekt ktlintCheck`
 - **Resultado:** BUILD SUCCESSFUL (64 tests unitarios totales en verde, 0 errores, 0 violaciones Detekt, 0 violaciones ktlint).
+
+---
+
+## Detalle de Evidencia - Fase F8
+
+### Test T-F8-01: Velocidad Articular Normalizada (`JointSpeedCalculatorTest`)
+- **Comando:** `./gradlew :analysis:test --tests "mx.taekwondo.poomsae.analysis.segmentation.JointSpeedCalculatorTest"`
+- **Resultado:** BUILD SUCCESSFUL (5 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - `null previous frame` y $\Delta t \le 0$ retornan mapa vacío y velocidad activa 0.0.
+  - Esqueleto estático produce velocidades articulares nulas ($< 10^{-6}$).
+  - Movimiento activo produce velocidad proporcional en torsos/segundo ($> 0.80$).
+  - Invariancia a la distancia de la cámara demostrada por normalización con $T_{\text{img}}$.
+
+### Test T-F8-02: Segmentación Temporal y Picos (`MotionSegmenterTest`)
+- **Comando:** `./gradlew :analysis:test --tests "mx.taekwondo.poomsae.analysis.segmentation.MotionSegmenterTest"`
+- **Resultado:** BUILD SUCCESSFUL (5 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Transición completa `AwaitingMovement` -> `InMovement` ($v \ge 0.80$ durante $> 100\text{ ms}$) -> `Holding` ($v < 0.25$ durante $> 600\text{ ms}$).
+  - Detección precisa de cuadro de pico de elevación del tobillo pateador para movimientos `PEAK_THEN_HOLD` (Ap chagi, mov. 14).
+  - No confusión en posiciones estacionarias consecutivas (movimientos 5 -> 6 con misma postura Ap kubi): los pies inmóviles no detienen ni confunden al segmentador, disparando el inicio en base a las articulaciones activas de los brazos.
+  - Inactividad prolongada detectada con evento `TimedOut` tras 8000 ms.
+  - Pérdida de tracking ($> 1000\text{ ms}$) y recuperación automática ($> 1500\text{ ms}$) sin interbloqueos.
+
+### Test T-F8-03: Secuenciación Guiada y Recuperación SC-13 (`SessionEngineTest`)
+- **Comando:** `./gradlew :analysis:test --tests "mx.taekwondo.poomsae.analysis.segmentation.SessionEngineTest"`
+- **Resultado:** BUILD SUCCESSFUL (7 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Recorrido completo de los 18 movimientos de Taegeuk 1 de principio a fin sin interbloqueos, produciendo 18 evaluaciones y puntuación global calculada.
+  - Comandos de pausa (`Pause`) y reanudación (`Resume`) preservando el estado previo de ejecución.
+  - Repetición del movimiento actual (`RepeatCurrent`) incrementando el contador de intentos.
+  - Omisión voluntaria (`SkipCurrent`) registrando `MovementOutcome.OMITTED` y avanzando al siguiente movimiento.
+  - Omisión del último movimiento (18) finalizando la sesión limpiamente.
+  - Pausa automática por pérdida de tracking prolongada (`PauseReason.LOST_TRACKING`) y reanudación automática al recuperar cuadros válidos.
+  - Comandos de ciclo de vida (`RestartForm`, `Finish`, `Discard` -> `Aborted`).
+  - Transición completa desde estado inicial sin calibrar: `Framing` -> `Calibrating` -> `Ready`.
+
+### Test T-F8-04: Verificación Integral del Proyecto y CI Local
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (86/86 tests unitarios en verde, 0 incidencias Detekt, 0 violaciones ktlintCheck).
+- **Cobertura JaCoCo en `:analysis`:**
+  - Paquete `mx.taekwondo.poomsae.analysis.segmentation`: **91.02%** de líneas (403/443).
+  - Paquete `mx.taekwondo.poomsae.analysis.evaluation`: **89.79%** de líneas (475/529).
+  - Paquete `mx.taekwondo.poomsae.analysis.geometry`: **96.03%** de líneas (387/403).
+  - Paquete `mx.taekwondo.poomsae.analysis.quality`: **91.86%** de líneas (203/221).
+  - Total global `:analysis`: **93.03%** de líneas (2,056/2,210), superando el requisito de $\ge 85\%$.
+
 
 

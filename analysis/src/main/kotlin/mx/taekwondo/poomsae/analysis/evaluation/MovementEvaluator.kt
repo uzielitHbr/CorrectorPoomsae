@@ -13,6 +13,7 @@ data class EvaluationOptions(
     val window: List<PoseFrame> = emptyList(),
     val measuredTurnDeg: Double? = null,
     val attempts: Int = 1,
+    val peakFrame: PoseFrame? = null,
 )
 
 private data class ScoringContext(
@@ -44,8 +45,7 @@ object MovementEvaluator {
                 frame = frame,
                 movement = movement,
                 profile = profile,
-                window = window,
-                measuredTurnDeg = options.measuredTurnDeg,
+                options = options,
             )
 
         val criticalSet = resolveCriticalMetrics(movement)
@@ -104,7 +104,11 @@ object MovementEvaluator {
             frame = frame,
             movement = movement,
             profile = profile,
-            options = EvaluationOptions(window = window, measuredTurnDeg = measuredTurnDeg),
+            options =
+                EvaluationOptions(
+                    window = window,
+                    measuredTurnDeg = measuredTurnDeg,
+                ),
         )
 
     private fun determineEvaluability(

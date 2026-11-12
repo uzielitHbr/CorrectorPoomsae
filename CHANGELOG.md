@@ -5,6 +5,20 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-12
+### Added
+- **Fase F8 (Segmentación temporal y secuenciación guiada):**
+  - Implementación de `JointSpeedCalculator` para velocidad articular instantánea normalizada por tiempo y altura instantánea del torso en espacio de imagen en torsos/segundo (Sección 12.3).
+  - Modelos y contratos normativos de sesión en `SessionModels.kt`: `PauseReason`, `MovementSubState` (`AwaitingMovement`, `InMovement`, `Holding`, `Evaluated`), `SessionState` (`Idle`, `Framing`, `Calibrating`, `Ready`, `Running`, `Paused`, `Finished`, `Aborted`), `SessionCommand`, `SegmenterEvent` y `SessionEvent`.
+  - Máquina de estados de segmentación temporal `MotionSegmenter` que monitorea las velocidades articulares activas (`v_active >= V_START` para inicio con lockout de 400 ms, y `v_active < V_STILL` durante `>= T_HOLD_MS = 600 ms` para sostén).
+  - Detección de picos de elevación en patadas (`PEAK_THEN_HOLD`, movimientos 14 y 16) extrayendo el `peakFrame` para evaluación técnica de `Ap chagi`.
+  - Garantía de no confusión entre movimientos consecutivos que comparten posición sin desplazamiento de pies (movimientos 5 -> 6 y 11 -> 12), evaluando únicamente las articulaciones activas de los brazos.
+  - Mecanismos de recuperación SC-13: comandos `Pause`, `Resume`, `RepeatCurrent` (reintento con incremento de intentos), `SkipCurrent` (omisión voluntaria con `MovementOutcome.OMITTED`), `RestartForm` y `Discard`.
+  - Detección de pérdida de tracking (`T_LOSS_SHORT_MS = 1000 ms`) con pausa automática y reanudación automática al recuperar cuadros estables (`T_RECOVER_MS = 1500 ms`).
+  - Motor de sesión reactivo `SessionEngine` con `StateFlow<SessionState>` y `SharedFlow<SessionEvent>`, cálculo del rumbo medido relativo $\tau_{\text{meas}}(n)$ respecto al movimiento previo para verificar giros esperados y consolidación de la puntuación global de la sesión.
+  - Generador determinista de secuencias sintéticas ruidosas `SyntheticPoomsaeSequenceGenerator` para los 18 movimientos y casos de esquina.
+  - Suites de pruebas unitarias `JointSpeedCalculatorTest`, `MotionSegmenterTest` y `SessionEngineTest` con 86 tests unitarios totales en verde y cobertura de líneas del 91.02% en el paquete `segmentation` (93.03% global en `:analysis`).
+
 ## [0.6.0] - 2026-11-12
 ### Added
 - **Fase F6 (Calidad de señal y calibración del usuario):**
