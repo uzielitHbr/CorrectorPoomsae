@@ -14,11 +14,12 @@ class NavigationTest {
             Screen.Practice,
             Screen.Summary,
             Screen.History,
-            Screen.Settings
+            Screen.Settings,
+            Screen.MovementDetail,
         )
 
         val routes = screens.map { it.route }
-        assertEquals("Debe haber exactamente 5 pantallas base", 5, routes.size)
+        assertEquals("Debe haber exactamente 6 pantallas base", 6, routes.size)
         assertEquals("Todas las rutas de navegación deben ser únicas", routes.toSet().size, routes.size)
 
         assertTrue(routes.contains("home"))
@@ -26,6 +27,7 @@ class NavigationTest {
         assertTrue(routes.contains("summary"))
         assertTrue(routes.contains("history"))
         assertTrue(routes.contains("settings"))
+        assertTrue(routes.contains("movement_detail/{movementIndex}"))
+        assertEquals("movement_detail/5", Screen.MovementDetail.createRoute(5))
     }
 }
-

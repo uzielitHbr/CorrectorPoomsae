@@ -247,4 +247,47 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F9 (Modo de práctica interactivo con superposición de esqueleto en tiempo real y UI en Jetpack Compose).
 
+## Sesión 2026-11-12 (Cierre Fase F9 - Interfaz de la sesión de práctica)
+- **Objetivo:** Implementar la experiencia completa de uso (Inicio, Encuadre/Calibración, Práctica guiada con orientación vertical bloqueada, Resumen y Detalle técnico del movimiento) conectando el `SessionEngine` de `:analysis` a la interfaz en Jetpack Compose, con estricto apego al diseño cerrado de la sección 14, tokens de color Material 3, tipografía, regla R-10 (100% textos en `strings.xml`), avisos normativos obligatorios, vistas previas Compose (@Preview) para todos los estados y pruebas de transición con Turbine.
+- **Archivos creados / modificados:**
+  - `app/src/main/res/values/strings.xml` (catálogo exhaustivo según 12.8, 14.5, 14.6 y 14.8, sin strings cableados en código).
+  - `app/src/main/java/tkd/apptkd/ui/theme/Color.kt` y `Theme.kt` (`ExtendedColors` para `resultCorrect`, `resultImprovable`, `resultIncorrect`, `resultNotEvaluable`, y `overlayScrim`).
+  - `app/src/main/java/tkd/apptkd/ui/theme/Type.kt` (escala tipográfica oficial de la sección 14.3).
+  - `app/src/main/java/tkd/apptkd/ui/navigation/Screen.kt` y `AppNavigation.kt` (ruta `MovementDetail` con argumento `movementIndex`).
+  - `app/src/main/java/tkd/apptkd/ui/components/`:
+    - `Buttons.kt` (`PrimaryButton`, `SecondaryButton`, respetando límite de 5 parámetros y 24dp pill shape).
+    - `ResultChip.kt` (chip de categoría visual con icono e indicador textual).
+    - `ScoreRing.kt` (anillo de puntuación circular con etiqueta "orientativo").
+    - `MovementTimeline.kt` (línea temporal de 18 segmentos con estados Pending, Current, Evaluated y Omitted).
+    - `MovementCard.kt` (tarjeta de desglose técnico con nombres en español/coreano, postura y chip de resultado).
+    - `TurnIndicator.kt` (flecha e indicación de ángulo de giro en grados).
+    - `SkeletonOverlay.kt` (superposición anatómica con trazo de 4dp, articulaciones de 6dp de radio, borde oscuro fino y líneas atenuadas/discontinuas para baja visibilidad).
+    - `GuidanceBanner.kt`, `StatusBanner.kt` y `MetricRow.kt` (barra visual de rango ideal).
+    - `ConfirmDialog.kt` (diálogos modales Material 3 para pausa y salida).
+    - `StateViews.kt` (`LoadingState`, `EmptyState`, `ErrorState`).
+    - `ComponentPreviews.kt` (vistas previas @Preview en temas Claro y Oscuro para todos los componentes).
+  - `app/src/main/java/tkd/apptkd/ui/screens/`:
+    - `HomeScreen.kt` (tarjeta de Taegeuk 1 Jang, 18 movimientos, última puntuación, tarjeta de borrador SC-18, aviso de fijación documental y disclaimer).
+    - `PracticeScreen.kt` (bloqueo de orientación vertical D-03 mediante `DisposableEffect`, vista previa CameraX, HUD con `OverlayScrim`, superposición de esqueleto, retroalimentación no bloqueante de 2500 ms y controles táctiles de 56 dp).
+    - `PracticeOverlays.kt` (encuadre silueta, progreso de calibración inmóvil, cuenta regresiva, diálogos de confirmación y pantallas de error).
+    - `SummaryScreen.kt` (anillo de puntuación, conteo evaluables/parciales/no evaluables, 18 tarjetas clicables y avisos normativos).
+    - `MovementDetailScreen.kt` (instantánea de la pose clave con esqueleto, cabecera de técnica, observaciones mapeadas en español de México y filas de métricas con barras visuales).
+  - Modelos y orquestación UI:
+    - `PracticeSessionHolder.kt` (gestión en memoria de resumen, borradores y última puntuación).
+    - `VoicePlayer.kt` (abstracción para lectura de voz opcional con `NoOpVoicePlayer` para pruebas).
+    - `AppModule.kt` (inyección Hilt de `PoomsaeDefinition` y `VoicePlayer`).
+    - `PracticeViewModel.kt` y `PracticeViewModelHandlers.kt` (mapeo reactivo de `SessionEngine` a Compose sin exceder límites de complejidad ciclomática ni número de métodos).
+    - `HomeViewModel.kt`, `SummaryViewModel.kt` y `MovementDetailViewModel.kt`.
+  - Pruebas unitarias de ViewModels con Turbine:
+    - `app/src/test/java/tkd/apptkd/ui/HomeViewModelTest.kt`
+    - `app/src/test/java/tkd/apptkd/ui/PracticeViewModelTest.kt`
+    - `app/src/test/java/tkd/apptkd/ui/SummaryViewModelTest.kt`
+    - `app/src/test/java/tkd/apptkd/ui/MovementDetailViewModelTest.kt`
+    - `app/src/test/java/tkd/apptkd/ui/NavigationTest.kt`
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleDebug testDebugUnitTest :analysis:test detekt ktlintCheck` (OK — 118/118 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — todas las verificaciones en verde).
+- **Decisiones pendientes:** Ninguna.
+- **Siguiente paso:** Proceder a Fase F10 (Persistencia de historial de sesiones y analítica local con Room).
+
 

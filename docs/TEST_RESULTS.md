@@ -230,5 +230,47 @@
   - Paquete `mx.taekwondo.poomsae.analysis.quality`: **91.86%** de líneas (203/221).
   - Total global `:analysis`: **93.03%** de líneas (2,056/2,210), superando el requisito de $\ge 85\%$.
 
+## FASE F9: Interfaz de la sesión de práctica (2026-11-12)
+
+### Test T-F9-01: Estado Inicial y Descarte de Borrador (`HomeViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.HomeViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (2 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Emisión de estado inicial sin borrador y con última puntuación reflejada reactivamente vía Turbine.
+  - Detección reactiva de borrador previo (SC-18) y acción de descarte limpiando el estado.
+
+### Test T-F9-02: Flujo Reactivo de Sesión de Práctica (`PracticeViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.PracticeViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (6 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados con Turbine:**
+  - Estado inicial `Framing` con guía de silueta y cámara frontal predeterminada.
+  - Alternancia de facing de cámara (frontal / trasera).
+  - Alternancia de lectura por voz (`voiceEnabled`).
+  - Flujo de pausa y reanudación con diálogos de confirmación modales.
+  - Guardado de borrador con salida a Inicio (SC-18).
+  - Descarte voluntario de sesión confirmando estado `Aborted`.
+  - Comandos de omisión (`SkipCurrent`) y repetición (`RepeatCurrent`) durante la práctica activa.
+
+### Test T-F9-03: Resumen y Desglose de 18 Movimientos (`SummaryViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.SummaryViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (2 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos validados con Turbine:**
+  - Estado vacío cuando no hay resumen registrado.
+  - Mapeo fiel de resumen con 18 tarjetas (`MovementCardData`), categorías asignadas (`CORRECT`, `IMPROVABLE`, etc.), puntuación global orientativa y conteo de evaluables/parciales.
+
+### Test T-F9-04: Detalle Técnico del Movimiento (`MovementDetailViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.MovementDetailViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (1 test ejecutado, 0 fallos, 0 omitidos)
+- **Casos validados:**
+  - Mapeo de pose clave, instantánea (`snapshotFrame`), cabeceras en español y coreano, retroalimentación estructurada mapeada con `FeedbackMessageMapper` y filas de métricas con estado dentro/fuera de banda.
+
+### Test T-F9-05: Verificación Integral del Proyecto y CI Local
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (118/118 tests unitarios totales en verde, 0 incidencias Detekt, 0 violaciones ktlintCheck, compilación assembleDebug OK).
+- **Desglose de pruebas unitarias:**
+  - `:analysis`: 86 pruebas unitarias (100% pasando).
+  - `:app`: 32 pruebas unitarias (100% pasando).
+  - Total: 118 pruebas unitarias.
+
 
 

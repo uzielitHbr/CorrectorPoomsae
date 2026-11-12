@@ -51,6 +51,79 @@
     <string name="MSG_VIDEO_CANCEL">Análisis cancelado.</string>
     <string name="MSG_DELETE_ALL">Se borrarán todas tus prácticas y datos de esta app. Esta acción no se puede deshacer.</string>
     <string name="MSG_DISCLAIMER">La puntuación es orientativa y no es una calificación oficial.</string>
+    <string name="MSG_KIHAP_REMINDER">¡Grita Kihap en este movimiento!</string>
+
+    <!-- Componentes y Categorías de Resultado (Sección 14.5 y 14.6) -->
+    <string name="category_correct">Correcto</string>
+    <string name="category_improvable">Mejorable</string>
+    <string name="category_incorrect">Incorrecto</string>
+    <string name="category_not_evaluable">No evaluado</string>
+
+    <!-- Botones y Acciones de Interfaz (Sección 14.6 y 14.8) -->
+    <string name="btn_repeat">Repetir</string>
+    <string name="btn_skip">Omitir</string>
+    <string name="btn_voice_on">Voz</string>
+    <string name="btn_voice_off">Silencio</string>
+    <string name="btn_pause">Pausa</string>
+    <string name="btn_resume">Reanudar</string>
+    <string name="btn_repeat_movement">Repetir movimiento</string>
+    <string name="btn_restart_form">Repetir la forma</string>
+    <string name="btn_finish">Terminar</string>
+    <string name="btn_practice_again">Practicar de nuevo</string>
+    <string name="btn_share">Compartir</string>
+    <string name="btn_continue">Continuar</string>
+    <string name="btn_save_and_exit">Guardar y salir</string>
+    <string name="btn_discard">Descartar</string>
+    <string name="btn_retry">Reintentar</string>
+    <string name="btn_return_home">Volver al inicio</string>
+
+    <!-- Banners y Estados Persistentes (Sección 14.6 y 14.8) -->
+    <string name="status_documentally_fixed">Secuencia fijada documentalmente; no certificada oficialmente</string>
+    <string name="draft_banner_title">Tienes una práctica sin terminar</string>
+    <string name="draft_movement_format">Movimiento %1$d de %2$d</string>
+    <string name="last_practice_format">Última práctica: %1$s (orient.)</string>
+
+    <!-- Encuadre, Calibración y Preparación (Sección 14.8) -->
+    <string name="screen_preparation">Preparación</string>
+    <string name="step_framing_title">Paso 1 de 2: Encuadre</string>
+    <string name="step_calibration_title">Paso 2 de 2: Calibración</string>
+    <string name="label_stay_still">Permanece erguido y quieto...</string>
+    <string name="label_framing_silhouette_guide">Silueta guía de cuerpo completo</string>
+    <string name="label_calibration_progress">Calibrando proporciones corporales...</string>
+    <string name="label_ready_countdown">Comenzando en %1$d...</string>
+    <string name="label_ready_pose_instruction">Adopta la posición de inicio (Chunbi)</string>
+    <string name="dialog_exit_title">¿Quieres salir de la práctica?</string>
+    <string name="dialog_exit_message_evaluated">El progreso actual se guardará como borrador.</string>
+    <string name="dialog_exit_message_clean">¿Estás seguro de que deseas salir?</string>
+    <string name="dialog_pause_title">Práctica en pausa</string>
+
+    <!-- HUD de Práctica en Vivo (Sección 14.8) -->
+    <string name="movement_progress_label">Movimiento %1$d / %2$d</string>
+    <string name="next_movement_prefix">Siguiente: %1$s</string>
+    <string name="turn_left_90">Gira 90° a la izquierda</string>
+    <string name="turn_right_90">Gira 90° a la derecha</string>
+    <string name="turn_half_180">Gira 180° (media vuelta)</string>
+    <string name="turn_none">Sin giro (mismo frente)</string>
+
+    <!-- Resumen y Detalle de Movimiento (Sección 14.8) -->
+    <string name="score_ring_label">Puntaje orientativo</string>
+    <string name="score_ring_no_score">Sin puntaje</string>
+    <string name="summary_counts_format">%1$d evaluados · %2$d parciales · %3$d no evaluables</string>
+    <string name="detail_title">Movimiento %1$d</string>
+    <string name="detail_score_format">Puntaje %1$d</string>
+    <string name="detail_corrections_title">Correcciones:</string>
+    <string name="detail_metrics_title">Métricas:</string>
+    <string name="detail_snapshot_title">Momento clave</string>
+    <string name="detail_no_corrections">¡Excelente ejecución técnica!</string>
+    <string name="metric_status_within">Dentro del rango ideal</string>
+    <string name="metric_status_near">Cerca del rango ideal</string>
+    <string name="metric_status_outside">Fuera del rango ideal</string>
+    <string name="metric_status_unavailable">No disponible</string>
+    <string name="metric_status_informative">Informativa (baja fiabilidad)</string>
+    <string name="metric_range_format">Banda: [%1$.1f, %2$.1f]</string>
+    <string name="metric_value_format">Valor: %1$.1f</string>
+    <string name="loading_preparing_analysis">Preparando el análisis…</string>
+    <string name="empty_no_history">Sin sesiones registradas aún. ¡Comienza tu primera práctica!</string>
 
     <!-- Retroalimentación Técnica Específica (Sección 12.8 / F7) -->
     <string name="FB_STANCE_STEP_TOO_SHORT">Alarga un poco más tu paso.</string>

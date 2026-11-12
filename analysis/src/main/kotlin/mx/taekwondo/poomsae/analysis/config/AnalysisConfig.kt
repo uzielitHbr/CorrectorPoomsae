@@ -255,6 +255,12 @@ object AnalysisConfig {
     const val T_RECOVER_MS: Long = 1500L
 
     /**
+     * Duration (milliseconds) that a non-blocking technical feedback banner is displayed (SC-10).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val T_FEEDBACK_MS: Long = 2500L
+
+    /**
      * Maximum allowed attempts in strict practice mode before marking movement failed (SC-11).
      * Status: PENDIENTE_CALIBRAR.
      */

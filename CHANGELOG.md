@@ -5,6 +5,23 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-12
+### Added
+- **Fase F9 (Interfaz de la sesión de práctica):**
+  - Implementación de la experiencia interactiva completa de práctica conectando `SessionEngine` a Jetpack Compose con Material 3.
+  - Pantallas de la sección 14.8:
+    - **Inicio (`HomeScreen`)**: Tarjeta oficial de Taegeuk 1 Jang, desglose de 18 movimientos, última puntuación, tarjeta de recuperación de borrador (SC-18), aviso de secuencia fijada documentalmente y disclaimer obligatorio.
+    - **Preparación y Calibración**: Paso 1 (encuadre del cuerpo completo dentro de la silueta) y Paso 2 (calibración en quietud erguida *junbi seogi* con barra de progreso y reintento en caso de rechazo).
+    - **Práctica (`PracticeScreen`)**: Bloqueo de orientación vertical obligatoria (D-03) con `DisposableEffect`, vista previa en vivo de CameraX con análisis MediaPipe, HUD con capa semitransparente `OverlayScrim`, superposición anatómica `SkeletonOverlay`, indicador de rumbo/giro en grados `TurnIndicator`, línea temporal de 18 segmentos `MovementTimeline`, recordatorio de Kihap en movimiento 18, banner no bloqueante de retroalimentación de 2500 ms y controles táctiles de 56 dp.
+    - **Resumen (`SummaryScreen`)**: Anillo de puntuación circular `ScoreRing` con etiqueta "orientativo", conteo de movimientos evaluables, parcialmente evaluables y no evaluables, lista completa de 18 tarjetas clicables `MovementCard` con chips de categoría, aviso de motor experimental y navegación de retorno.
+    - **Detalle del Movimiento (`MovementDetailScreen`)**: Instantánea estática del esqueleto en la pose clave, cabecera técnica en español y coreano, observaciones estructuradas mapeadas en español de México mediante `FeedbackMessageMapper`, y desglose de métricas con rangos y barras de estado visuales.
+  - Componentes reutilizables de la sección 14.6: `PrimaryButton`, `SecondaryButton`, `ResultChip`, `ScoreRing`, `MovementTimeline`, `MovementCard`, `TurnIndicator`, `SkeletonOverlay`, `GuidanceBanner`, `StatusBanner`, `MetricRow`, `ConfirmDialog`, `LoadingState`, `EmptyState` y `ErrorState`.
+  - Estricto cumplimiento de la regla R-10: 100% de los textos e indicaciones de interfaz centralizados en `strings.xml` utilizando el catálogo de las secciones 12.8 y 14.5.
+  - Vistas previas Compose (@Preview) para todos los componentes y estados en temas Claro y Oscuro.
+  - Inyección de dependencias con Hilt para `PoomsaeDefinition` y `VoicePlayer` en `AppModule`.
+  - Orquestación y estado UI desacoplado en `PracticeViewModel`, `HomeViewModel`, `SummaryViewModel` y `MovementDetailViewModel`.
+  - Suite de pruebas unitarias exhaustivas con **Turbine** (`HomeViewModelTest`, `PracticeViewModelTest`, `SummaryViewModelTest`, `MovementDetailViewModelTest`, `NavigationTest`), alcanzando 118 pruebas unitarias totales en verde en el proyecto.
+
 ## [0.8.0] - 2026-11-12
 ### Added
 - **Fase F8 (Segmentación temporal y secuenciación guiada):**
