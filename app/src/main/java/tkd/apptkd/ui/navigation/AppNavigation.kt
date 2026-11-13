@@ -30,9 +30,12 @@ fun AppNavigation(
     ) {
         composable(Screen.Home.route) {
             HomeScreen(
-                onNavigateToPractice = { navController.navigate(Screen.Practice.route) },
-                onNavigateToHistory = { navController.navigate(Screen.History.route) },
-                onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                actions = tkd.apptkd.ui.screens.HomeNavigationActions(
+                    onNavigateToPractice = { navController.navigate(Screen.Practice.route) },
+                    onNavigateToHistory = { navController.navigate(Screen.History.route) },
+                    onNavigateToSettings = { navController.navigate(Screen.Settings.route) },
+                    onNavigateToSummary = { navController.navigate(Screen.Summary.route) },
+                ),
             )
         }
         composable(Screen.Practice.route) {

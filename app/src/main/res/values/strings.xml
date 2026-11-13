@@ -49,6 +49,14 @@
     <string name="MSG_NO_SCORE">No fue posible evaluar esta práctica. Revisa las sugerencias de colocación.</string>
     <string name="MSG_VIDEO_ERR">No se pudo abrir el video. Revisa el formato, la duración y el tamaño.</string>
     <string name="MSG_VIDEO_CANCEL">Análisis cancelado.</string>
+    <string name="video_err_too_long">El video excede la duración máxima permitida (3 minutos).</string>
+    <string name="video_err_too_large">El archivo excede el tamaño máximo permitido (200 MB).</string>
+    <string name="video_err_resolution_too_high">La resolución del video excede el límite permitido (1080p).</string>
+    <string name="video_err_unsupported_format">El formato de video no es compatible o no contiene pista de video.</string>
+    <string name="video_analysis_title">Analizando video</string>
+    <string name="video_analysis_progress_format">Procesando: %1$d%% (%2$d s / %3$d s)</string>
+    <string name="video_analysis_movements_count">Movimientos detectados: %1$d</string>
+    <string name="video_analysis_cancelling">Cancelando análisis…</string>
     <string name="MSG_DELETE_ALL">Se borrarán todas tus prácticas y datos de esta app. Esta acción no se puede deshacer.</string>
     <string name="MSG_DISCLAIMER">La puntuación es orientativa y no es una calificación oficial.</string>
     <string name="MSG_KIHAP_REMINDER">¡Grita Kihap en este movimiento!</string>
@@ -75,6 +83,8 @@
     <string name="btn_save_and_exit">Guardar y salir</string>
     <string name="btn_discard">Descartar</string>
     <string name="btn_retry">Reintentar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_accept">Aceptar</string>
     <string name="btn_return_home">Volver al inicio</string>
 
     <!-- Banners y Estados Persistentes (Sección 14.6 y 14.8) -->

@@ -254,11 +254,20 @@ internal fun HistorySessionCard(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
-                if (item.status == "INCOMPLETE") {
-                    StatusBadge(
-                        text = stringResource(id = R.string.history_session_incomplete_badge),
-                        isWarning = true,
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (item.mode == "VIDEO") {
+                        StatusBadge(
+                            text = stringResource(id = R.string.history_session_video_badge),
+                            isWarning = false,
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
+                    if (item.status == "INCOMPLETE") {
+                        StatusBadge(
+                            text = stringResource(id = R.string.history_session_incomplete_badge),
+                            isWarning = true,
+                        )
+                    }
                 }
             }
 

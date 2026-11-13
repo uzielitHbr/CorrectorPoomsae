@@ -172,5 +172,78 @@
   - Exige marcas de tiempo estrictamente crecientes (`timestampMs > lastTimestampMs`). Cuadros con marcas no crecientes o negativas son rechazados y contabilizados en `droppedFrames`.
   - En la vista previa de la cámara frontal, el lienzo de Compose aplica espejado horizontal (`canvasX = (1.0 - rawX) * width`) para interacción natural, mientras que las coordenadas internas de análisis se conservan sin reflejar (Regla R-23).
 
+---
+
+## 6. Decisiones Técnicas Específicas de la Fase F10 (Persistencia, Historial y Exportación)
+
+### D-F10-01: Esquema Relacional de Room y Mapeo en Cascada con Resguardo de Esquemas JSON
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - Persistencia de `SessionEntity` y `MovementResultEntity` con clave foránea en cascada (`ForeignKey.CASCADE`) e índices por `startedAtMs` y `sessionId`.
+  - Prohibido el uso de `fallbackToDestructiveMigration()`. Esquemas JSON exportados en `app/schemas/` para verificación estática de Room.
+  - Soporte de borrador de sesión interrumpida (`SessionDraftEntity`, D-06) con vigencia máxima de 24 horas (`DRAFT_MAX_AGE_HOURS`).
+
+### D-F10-02: Borrado Irreversible de Datos (SC-30) y Exportación con FileProvider y PdfDocument
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - `DataErasureService` implementa borrado atómico e irreversible de bases de datos Room, preferencias DataStore, archivos de borrador y capturas de pantalla asociadas sin dejar rastro (R-09).
+  - Exportación de resumen técnico en texto plano y PDF generado mediante `android.graphics.pdf.PdfDocument`, servido mediante `FileProvider` con permisos temporales `FLAG_GRANT_READ_URI_PERMISSION`.
+
+---
+
+## 7. Decisiones Técnicas Específicas de la Fase F11 (Análisis de Video Grabado)
+
+### D-F11-01: Selector de Video del Sistema (`PickVisualMedia` / PhotoPicker)
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación Oficial:**
+  - Se seleccionó `ActivityResultContracts.PickVisualMedia` configurado con `VisualMediaType.VideoOnly`.
+  - **Documentación oficial verificada:** Android Developers Guide (*Photo Picker*, `https://developer.android.com/training/data-storage/shared/photopicker`).
+  - Cumple estrictamente con las directrices de privacidad de Android moderno: no requiere permisos de almacenamiento en tiempo de ejecución (`READ_MEDIA_VIDEO` o `READ_EXTERNAL_STORAGE` son innecesarios), funciona de forma retrocompatible en Android 8.0+ mediante los servicios de Google Play y otorga un `Uri` de acceso de lectura temporal y acotado.
+
+### D-F11-02: API de Decodificación y Muestreo por Cuadros (`MediaMetadataRetriever` con `getScaledFrameAtTime`)
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación Oficial:**
+  - Se eligió `MediaMetadataRetriever` con `getScaledFrameAtTime(timeUs, option, dstWidth, dstHeight)` (API 27+) y fallback retrocompatible con escalado en API 26.
+  - **Documentación oficial verificada:** `https://developer.android.com/reference/android/media/MediaMetadataRetriever#getScaledFrameAtTime(long,%20int,%20int,%20int)`.
+  - **Comparativa técnica frente a MediaCodec + Surface:**
+    - `MediaCodec` requiere inicialización asíncrona de decodificadores de hardware, enlaces con `SurfaceTexture`/`ImageReader` o contextos OpenGL, y una gestión compleja de colorimetría para muestreo estático.
+    - `MediaMetadataRetriever.getScaledFrameAtTime` realiza la reducción de escala directamente en el subsistema de medios nativo a la dimensión máxima acotada (`VIDEO_DOWNSCALE_TARGET_MAX_DIM = 640`), evitando que mapas de bits a resolución nativa 1080p/4K ocupen memoria en el heap de la JVM.
+    - Permite muestreo temporal determinista (`VIDEO_FRAME_INTERVAL_MS = 66L`, ~15 fps), sincronizado con el motor `SessionEngine`.
+    - Extrae de manera instantánea metadatos de duración, dimensiones, rotación y presencia de pista de video para rechazo temprano.
+
+### D-F11-03: MediaPipe Pose Landmarker en `RunningMode.VIDEO` y Timestamps Intrínsecos
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación Oficial:**
+  - Se configuró `PoseLandmarker` en `RunningMode.VIDEO` invocando `detectForVideo(image, timestampMs)`.
+  - **Documentación oficial verificada:** `https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker/android#video`.
+  - A diferencia de `RunningMode.LIVE_STREAM` (asíncrono con descarte de cuadros), `RunningMode.VIDEO` es síncrono y garantiza que ningún cuadro sea descartado por saturación de CPU, procesando el video a ritmo de decodificación en hilo de fondo (`Dispatchers.Default`).
+  - Las marcas de tiempo `timestampMs` corresponden estrictamente a la posición temporal intrínseca del video en milisegundos (`timeMs = 0, 66, 132, ...`), satisfaciendo la exigencia de marcas estrictamente monótonas crecientes de MediaPipe y la arquitectura de línea de tiempo única de `PoseFrame`.
+
+### D-F11-04: Corrección de Orientación y Contención de Memoria ($O(1)$)
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - Los videos grabados en teléfonos móviles suelen registrarse con rotación de 90° o 270°. `VideoFrameRotator` lee `METADATA_KEY_VIDEO_ROTATION` y aplica `Matrix.postRotate` si la rotación normalizada es distinta de 0°.
+  - Para evitar fugas de memoria o errores OutOfMemory (OOM), el bitmap original antes de la rotación es reciclado inmediatamente (`bitmap.recycle()`).
+  - Cada mapa de bits decodificado es reciclado inmediatamente en el bloque `finally` tras pasar por `detector.processFrame`, garantizando un uso de memoria constante ($O(1)$, un único bitmap en vuelo a la vez).
+
+### D-F11-05: Rechazo Anticipado (SC-28) y Cancelación Inmediata de Recursos (SC-29)
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación:**
+  - **SC-28:** Antes de decodificar ningún cuadro, `VideoValidator` verifica en pure Kotlin los límites estipulados en `AnalysisConfig`:
+    - Duración máxima: 180 s (`VIDEO_MAX_DURATION_SECONDS`).
+    - Tamaño máximo: 200 MB (`VIDEO_MAX_FILE_SIZE_BYTES`).
+    - Resolución máxima: 1920x1920 (`VIDEO_MAX_WIDTH`, `VIDEO_MAX_HEIGHT`).
+    - Formato y pista de video válida (`hasVideoTrack`, dimensiones > 0, duración > 0).
+    - Los fallos emiten mensajes específicos en español de México (`video_err_too_long`, `video_err_too_large`, `video_err_resolution_too_high`, `video_err_unsupported_format`).
+  - **SC-29:** La interfaz presenta un diálogo modal `VideoProcessingDialog` con porcentaje y botón «Cancelar». Al pulsar cancelar, la corrutina se cancela inmediatamente (`currentCoroutineContext().isActive`), el bucle de decodificación finaliza en la siguiente verificación (~66 ms), se liberan los recursos nativos (`retriever.release()`, `detector.close()`), no se persiste nada en base de datos ni borrador, y se muestra el aviso «Análisis cancelado» (`MSG_VIDEO_CANCEL`).
+
+
 
 

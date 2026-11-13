@@ -289,4 +289,45 @@ object AnalysisConfig {
      * Status: PENDIENTE_CALIBRAR.
      */
     const val DRAFT_MAX_AGE_HOURS: Long = 24L
+
+    // -------------------------------------------------------------------------
+    // Offline Video Analysis Limits (SC-28) — PENDIENTE_CALIBRAR (F11 / F12)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Maximum video duration in seconds allowed for offline analysis (SC-28).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_MAX_DURATION_SECONDS: Long = 180L
+
+    /**
+     * Maximum video file size in bytes allowed for offline analysis (SC-28).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_MAX_FILE_SIZE_BYTES: Long = 200L * 1024L * 1024L
+
+    /**
+     * Maximum video width in pixels allowed for offline analysis (SC-28).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_MAX_WIDTH: Int = 1920
+
+    /**
+     * Maximum video height in pixels allowed for offline analysis (SC-28).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_MAX_HEIGHT: Int = 1920
+
+    /**
+     * Target bounding dimension (width or height) to pre-downscale frames for pose inference.
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_DOWNSCALE_TARGET_MAX_DIM: Int = 640
+
+    /**
+     * Sampling interval (milliseconds) between consecutive decoded frames in offline mode.
+     * Approximately 15 frames per second (~66 ms).
+     * Status: PENDIENTE_CALIBRAR.
+     */
+    const val VIDEO_FRAME_INTERVAL_MS: Long = 66L
 }

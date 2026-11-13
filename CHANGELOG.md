@@ -5,6 +5,26 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-12
+### Added
+- **Fase F11 (Análisis de video grabado):**
+  - Selector de video oficial del sistema mediante `ActivityResultContracts.PickVisualMedia` (`VisualMediaType.VideoOnly`), garantizando privacidad sin requerir permisos de almacenamiento en tiempo de ejecución.
+  - Decodificación por cuadros muestreados mediante `MediaMetadataRetriever` con reducción de escala nativa (`getScaledFrameAtTime`, max 640 px) para contención estricta de memoria ($O(1)$) y muestreo temporal determinista (~15 fps, 66 ms).
+  - Integración de MediaPipe Pose Landmarker en `RunningMode.VIDEO` síncrono con marcas de tiempo monótonas crecientes `timestampMs` extraídas de la pista de video.
+  - Corrección de orientación con lectura de metadatos de rotación (`METADATA_KEY_VIDEO_ROTATION`) mediante `Matrix.postRotate` y reciclaje inmediato del mapa de bits original.
+  - Conexión de los cuadros decodificados con la tubería de análisis completa (`SessionEngine`, `MotionSegmenter`, `MovementEvaluator`), persistiendo la sesión con `mode = "VIDEO"` y badge distintivo en Historial.
+  - Ampliaciones v2.0:
+    - Límites normativos en `AnalysisConfig`: duración máxima 180 s (`VIDEO_MAX_DURATION_SECONDS`), tamaño máximo 200 MB (`VIDEO_MAX_FILE_SIZE_BYTES`), resolución máxima 1920x1920 (`VIDEO_MAX_WIDTH`/`HEIGHT`).
+    - Rechazo anticipado (SC-28) mediante `VideoValidator` en `:analysis` con emisión de mensajes específicos (`video_err_too_long`, `video_err_too_large`, `video_err_resolution_too_high`, `video_err_unsupported_format`).
+    - Diálogo modal de procesamiento `VideoProcessingDialog` con porcentaje, tiempo transcurrido/total, movimientos detectados y botón destructivo «Cancelar» (SC-29) que detiene la corrutina de inmediato, libera decodificador y detector nativos sin persistir datos en base de datos.
+  - 29 nuevas pruebas unitarias automatizadas (167 pruebas totales en el proyecto en verde):
+    - `VideoValidatorTest` (11 pruebas en `:analysis`).
+    - `VideoFrameScalerTest` (6 pruebas en `:app`).
+    - `VideoFrameRotatorTest` (5 pruebas Robolectric en `:app`).
+    - `OfflineVideoProcessorTest` (3 pruebas Robolectric en `:app`).
+    - `VideoAnalysisViewModelTest` (4 pruebas Robolectric con Turbine en `:app`).
+  - 0 incidencias Detekt, 0 violaciones ktlintCheck.
+
 ## [0.10.0] - 2026-11-12
 ### Added
 - **Fase F10 (Persistencia, historial y exportación):**

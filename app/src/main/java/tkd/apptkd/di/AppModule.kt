@@ -46,4 +46,22 @@ object AppModule {
     @Singleton
     fun provideSessionDraftDao(database: tkd.apptkd.data.room.AppDatabase): tkd.apptkd.data.room.SessionDraftDao =
         database.sessionDraftDao()
+
+    @Provides
+    @Singleton
+    fun provideVideoFrameExtractorFactory(
+        @ApplicationContext context: Context,
+    ): tkd.apptkd.video.VideoFrameExtractorFactory =
+        tkd.apptkd.video.VideoFrameExtractorFactory { uri ->
+            tkd.apptkd.video.AndroidMediaMetadataRetrieverExtractor(context, uri)
+        }
+
+    @Provides
+    @Singleton
+    fun provideVideoPoseDetectorFactory(
+        @ApplicationContext context: Context,
+    ): tkd.apptkd.video.VideoPoseDetectorFactory =
+        tkd.apptkd.video.VideoPoseDetectorFactory {
+            tkd.apptkd.video.MediaPipeVideoPoseDetector(context)
+        }
 }

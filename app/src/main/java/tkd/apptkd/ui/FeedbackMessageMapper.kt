@@ -2,6 +2,7 @@ package tkd.apptkd.ui
 
 import androidx.annotation.StringRes
 import mx.taekwondo.poomsae.analysis.evaluation.FeedbackCode
+import mx.taekwondo.poomsae.analysis.video.VideoRejectionReason
 import tkd.apptkd.R
 
 /**
@@ -43,4 +44,14 @@ object FeedbackMessageMapper {
     @StringRes
     fun getStringResId(code: FeedbackCode): Int =
         RES_MAP[code] ?: error("No string resource mapped for code: $code")
+
+    @StringRes
+    fun mapVideoRejection(reason: VideoRejectionReason): Int = when (reason) {
+        VideoRejectionReason.FILE_TOO_LARGE -> R.string.video_err_too_large
+        VideoRejectionReason.DURATION_TOO_LONG -> R.string.video_err_too_long
+        VideoRejectionReason.RESOLUTION_TOO_HIGH -> R.string.video_err_resolution_too_high
+        VideoRejectionReason.UNSUPPORTED_FORMAT,
+        VideoRejectionReason.NO_VIDEO_TRACK,
+        -> R.string.video_err_unsupported_format
+    }
 }

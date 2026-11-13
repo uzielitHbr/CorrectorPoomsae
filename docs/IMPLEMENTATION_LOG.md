@@ -298,5 +298,50 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones pendientes:** Ninguna.
 - **Siguiente paso:** Proceder a Fase F11 (Harness de prueba sintética end-to-end, grabación y reproducción de sesiones).
 
+---
+
+## 2026-11-12 — Cierre de Fase F11: Análisis de video grabado
+
+- **Fase:** F11 (Análisis de video grabado fuera de línea)
+- **Objetivo:** Evaluar un poomsae ya grabado decodificando el archivo y procesándolo sin la presión del análisis en tiempo real, garantizando memoria acotada, timestamps intrínsecos, corrección de orientación, rechazo anticipado y cancelación inmediata.
+- **Cambios realizados:**
+  - Configuración de Límites y Validación en pure Kotlin (`:analysis`):
+    - `AnalysisConfig.kt`: Definición formal de límites bajo estado `PENDIENTE_CALIBRAR`:
+      - `VIDEO_MAX_DURATION_SECONDS = 180L` (3 minutos)
+      - `VIDEO_MAX_FILE_SIZE_BYTES = 200L * 1024L * 1024L` (200 MB)
+      - `VIDEO_MAX_WIDTH = 1920`, `VIDEO_MAX_HEIGHT = 1920` (resolución 1080p máx)
+      - `VIDEO_DOWNSCALE_TARGET_MAX_DIM = 640` (reducción previa de escala)
+      - `VIDEO_FRAME_INTERVAL_MS = 66L` (~15 fps de muestreo secuencial)
+    - `VideoMetadata.kt`: Modelo de metadatos técnicos (`durationMs`, `width`, `height`, `rotationDeg`, `fileSizeBytes`, `hasVideoTrack`).
+    - `VideoValidationResult.kt`: Enumeración cerrada `VideoRejectionReason` (`FILE_TOO_LARGE`, `DURATION_TOO_LONG`, `RESOLUTION_TOO_HIGH`, `UNSUPPORTED_FORMAT`, `NO_VIDEO_TRACK`) y tipo sellado `VideoValidationResult`.
+    - `VideoValidator.kt`: Validador puro sin dependencias de Android para rechazo anticipado (SC-28).
+  - Tubería y Decodificación en `:app` (`app/src/main/java/tkd/apptkd/video/`):
+    - `VideoFrameScaler.kt`: Cálculo de reducción de escala proporcional manteniendo relación de aspecto hasta el límite de 640 px.
+    - `VideoFrameRotator.kt`: Corrección de rotación mediante matriz según `METADATA_KEY_VIDEO_ROTATION` con reciclado inmediato del bitmap original.
+    - `VideoFrameExtractor.kt`: Contrato de extracción de metadatos y decodificación de cuadros por marcas de tiempo.
+    - `AndroidMediaMetadataRetrieverExtractor.kt`: Implementación sobre `MediaMetadataRetriever.getScaledFrameAtTime` (API 27+) y fallback con consulta de tamaño en `ContentResolver`.
+    - `VideoPoseDetector.kt`: Contrato desacoplado para detectores de postura en video.
+    - `MediaPipeVideoPoseDetector.kt`: Implementación sobre MediaPipe Pose Landmarker en `RunningMode.VIDEO` síncrono con marcas de tiempo monótonas crecientes.
+    - `OfflineVideoProcessor.kt`: Orquestador que conecta decodificación, escalado, rotación, detección y `SessionEngine`, emitiendo progreso y garantizando memoria acotada ($O(1)$) mediante reciclado continuo de mapas de bits.
+    - `VideoAnalysisOutcome.kt`: Resultado sellado (`Success`, `Rejected`, `Cancelled`, `Error`).
+    - `VideoAnalysisViewModel.kt`: ViewModel de Hilt que expone `VideoAnalysisUiState`, gestiona cancelación inmediata (SC-29), rechazo anticipado (SC-28), persistencia en Room con `mode = "VIDEO"` y actualización de `PracticeSessionHolder`.
+  - Interfaz de Usuario y Recursos (`app/src/main/java/tkd/apptkd/ui/`):
+    - `VideoProcessingDialog.kt`: Diálogo modal de progreso con `LinearProgressIndicator`, desglose de porcentaje/tiempo/movimientos detectados y botón destructivo «Cancelar» (SC-29).
+    - `HomeScreen.kt`: Integración del selector de video oficial del sistema (`PickVisualMedia` / `VideoOnly`), diálogo de procesamiento y navegación a `SummaryScreen` tras análisis exitoso.
+    - `HistoryScreen.kt`: Exhibición del badge visual «Video» (`history_session_video_badge`) para prácticas procesadas fuera de línea.
+    - `strings.xml`: Catálogo normativo con mensajes para cancelación (`MSG_VIDEO_CANCEL`), errores de video (`MSG_VIDEO_ERR`), rechazos específicos (`video_err_too_long`, `video_err_too_large`, `video_err_resolution_too_high`, `video_err_unsupported_format`) y textos de progreso.
+    - `AppNavigation.kt`: Conexión de callback `onNavigateToSummary` desde `HomeScreen`.
+  - Pruebas Unitarias Automatizadas (29 nuevas pruebas, 167 totales en verde):
+    - `VideoValidatorTest.kt` en `:analysis` (11 pruebas: validación normal, límites exactos de duración/tamaño/resolución, rechazo por exceso, formatos corruptos y ausencia de pista).
+    - `VideoFrameScalerTest.kt` en `:app` (6 pruebas: 1080p landscape/portrait, resoluciones menores, cuadrados, casos degenerados y coincidencia con `AnalysisConfig`).
+    - `VideoFrameRotatorTest.kt` en `:app` (5 pruebas Robolectric: 0°, 90°, 180°, 270°, 360°, comprobación de reciclado de bitmap original).
+    - `OfflineVideoProcessorTest.kt` en `:app` (3 pruebas Robolectric: finalización normal con timestamps crecientes y reciclado de bitmaps, rechazo temprano SC-28 sin decodificar cuadros, y cancelación inmediata SC-29 con cierre de recursos).
+    - `VideoAnalysisViewModelTest.kt` en `:app` (4 pruebas Robolectric con Turbine: estado inicial Idle, flujo completo con persistencia en modo VIDEO, rechazo con mapeo de error SC-28, cancelación SC-29 con mensaje informativo).
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleDebug testDebugUnitTest :analysis:test detekt ktlintCheck` (OK — 167/167 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — suite de verificación local completada en verde).
+- **Decisiones registradas:** D-F11-01 a D-F11-05 en `docs/DECISIONS.md`.
+- **Siguiente paso:** Proceder a Fase F12 (Calibración empírica y reporte de validación).
+
 
 

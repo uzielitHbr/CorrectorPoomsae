@@ -56,6 +56,44 @@ StateFlow<SessionState>
 - **Línea de tiempo única:** Basada estrictamente en `PoseFrame.timestampMs` (determinado por el sensor de cámara en vivo o por la pista de video en modo offline). El `SessionEngine` es determinista y no depende del reloj del sistema.
 - **Sin bloqueo del hilo principal:** Inferencia y análisis geométrico se ejecutan fuera del hilo principal de UI.
 
+### 2.3. Tubería de Análisis de Video Grabado Fuera de Línea (F11)
+
+```
+Video File (Uri)
+       │
+       ▼
+[ActivityResultContracts.PickVisualMedia] (PhotoPicker del sistema, sin permisos)
+       │
+       ▼
+[AndroidMediaMetadataRetrieverExtractor] (Extracción de metadatos técnicos)
+       │
+       ▼
+[VideoValidator] (SC-28: Validación anticipada de límites en pure Kotlin)
+       │
+       ├─► (Rechazado) ──► VideoAnalysisOutcome.Rejected ──► Diálogo de error específico
+       │
+       ▼ (Válido)
+[VideoFrameScaler] (Reducción previa de escala a max 640px para memoria acotada)
+       │
+       ▼
+[AndroidMediaMetadataRetrieverExtractor] (Muestreo a ~15 fps con getScaledFrameAtTime)
+       │
+       ▼
+[VideoFrameRotator] (Corrección de rotación según METADATA_KEY_VIDEO_ROTATION)
+       │  (Reciclado inmediato del Bitmap original)
+       ▼
+[MediaPipeVideoPoseDetector] (RunningMode.VIDEO síncrono con timestampMs intrínseco)
+       │  (Reciclado inmediato del Bitmap procesado)
+       ▼
+[MediaPipePoseAdapter] (Adaptador puro a PoseFrame)
+       │
+       ▼
+[SessionEngine] (Misma máquina de estados de análisis: Framing -> Calibrating -> Running -> Finished)
+       │
+       ├──► UI (VideoProcessingDialog modal con barra de progreso y Cancelar SC-29)
+       └──► Repository (Persistencia Room con mode = "VIDEO" y resumen inmediato)
+```
+
 ---
 
 ## 3. Contratos de Dominio Centrales (Sección 5.4 y 12.9.2)

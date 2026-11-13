@@ -18,6 +18,9 @@
 | **F6** | 2026-11-12 | Pruebas unitarias `FrameQualityGateTest` (4 tests), `BodyProfileCalibratorTest` (3 tests), Detekt y ktlintCheck | **PASS (Verde)** | `quality`: 91.86% (203/221) | Validación de compuerta de calidad (rechazo por encuadre incompleto, distancia inadecuada con MSG_FRAME_TOO_CLOSE/FAR, bordes cortados) y calibración antropométrica con ráfaga estable y mediana robusta MAD/Mediana <= CAL_MAX_REL_MAD. |
 | **F7** | 2026-11-12 | Pruebas unitarias `MovementEvaluatorTest` (6 tests), `MetricCalculatorTest` (9 tests), `FeedbackMessageMapperTest` (1 test), Detekt y ktlintCheck | **PASS (Verde)** | `evaluation`: 89.79% (475/529)<br>`geometry`: 96.03%<br>`signal`: 98.09%<br>`poomsae`: 89.19%<br>**Global `:analysis`:** 92.25% (1618/1754) | Implementación de las 21 métricas biomecánicas (13.4), bandas de puntuación 0..100 (13.8), 27 FeedbackCodes en español, y modelo de evaluabilidad de 13.7 (evaluable, parcialmente evaluable, no evaluable, incorrecto) verificado con SkeletonBuilder para monotonía, simetría y límites críticos. |
 | **F8** | 2026-11-12 | Pruebas unitarias `JointSpeedCalculatorTest` (5 tests), `MotionSegmenterTest` (5 tests), `SessionEngineTest` (7 tests), regresión completa (`scripts/verify.sh`), Detekt y ktlintCheck | **PASS (Verde)** | `segmentation`: 91.02% (403/443)<br>`evaluation`: 89.79%<br>`geometry`: 96.03%<br>`quality`: 91.86%<br>**Global `:analysis`:** 93.03% (2056/2210) | Segmentación temporal con velocidad articular adimensional en torsos/segundo (12.3), detección de inicio y ventana de sostén (600 ms), detección de picos en patadas (14 y 16), no confusión en posiciones consecutivas sin movimiento de pies (5-6 y 11-12), mecanismos de recuperación SC-13 (pausa, repetición, omisión y pérdida/recuperación de tracking) y recorrido de los 18 movimientos sin interbloqueos. |
+| **F9** | 2026-11-12 | Pruebas unitarias `HomeViewModelTest`, `PracticeViewModelTest`, `SummaryViewModelTest`, `MovementDetailViewModelTest`, previews Compose, Turbine | **PASS (Verde)** | N/A (Módulo `:app`) | Pantallas Inicio, Práctica vertical bloqueada, Resumen, Detalle. Superposiciones de esqueleto y flechas de giro. Vistas previas @Preview y tokens M3. |
+| **F10** | 2026-11-12 | Pruebas unitarias `RoomDatabaseTest`, `DatabaseMigrationTest`, `UserSettingsRepositoryTest`, `DataErasureServiceTest`, `SessionExporterTest`, `HistoryViewModelTest`, `SettingsViewModelTest` (138 tests totales) | **PASS (Verde)** | N/A (Módulo `:app`) | Persistencia Room de sesiones/resultados, DataStore de ajustes, borrador de sesión, borrado total irreversible SC-30, exportación PDF/texto y esquemas Room exportados. |
+| **F11** | 2026-11-12 | Pruebas unitarias `VideoValidatorTest` (11 tests), `VideoFrameScalerTest` (6 tests), `VideoFrameRotatorTest` (5 tests), `OfflineVideoProcessorTest` (3 tests), `VideoAnalysisViewModelTest` (4 tests) — 167 tests totales en verde | **PASS (Verde)** | `video`: 100.00%<br>**Global `:analysis`:** 93.4% | Análisis de video fuera de línea con PhotoPicker del sistema (`PickVisualMedia`), decodificación muestreada con `MediaMetadataRetriever` y memoria acotada ($O(1)$), `PoseLandmarker` en `RunningMode.VIDEO` síncrono, corrección de orientación, rechazo temprano SC-28 y diálogo con cancelación inmediata SC-29. |
 
 ---
 
@@ -336,6 +339,70 @@
   - `:analysis`: 86 pruebas unitarias (100% pasando).
   - `:app`: 52 pruebas unitarias (100% pasando).
   - Total: 138 pruebas unitarias.
+
+---
+
+## Detalle de Pruebas - Fase F11 (Análisis de Video Grabado)
+
+### Test T-F11-01: Validación de Límites y Rechazo Temprano (`VideoValidatorTest`)
+- **Comando:** `./gradlew :analysis:test --tests "mx.taekwondo.poomsae.analysis.video.VideoValidatorTest"`
+- **Resultado:** BUILD SUCCESSFUL (11 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados:**
+  - `valid video metadata returns Valid`: Video dentro de parámetros estándar (60 s, 1280x720, 50 MB) es aceptado.
+  - `boundary test - exactly max duration is accepted`: 180,000 ms es aceptado.
+  - `video exceeding max duration is rejected with DURATION_TOO_LONG`: 180,001 ms es rechazado (SC-28).
+  - `boundary test - exactly max file size is accepted`: 200 MB exactos es aceptado.
+  - `video exceeding max file size is rejected with FILE_TOO_LARGE`: 200 MB + 1 byte es rechazado (SC-28).
+  - `boundary test - exactly max resolution is accepted`: 1920x1920 es aceptado.
+  - `video exceeding max width/height is rejected with RESOLUTION_TOO_HIGH`: 1921x1080 o 1080x1921 es rechazado (SC-28).
+  - `video with zero or negative duration is rejected with UNSUPPORTED_FORMAT`: 0 ms o -100 ms es rechazado.
+  - `video with invalid dimensions is rejected with UNSUPPORTED_FORMAT`: ancho o alto $\le 0$ es rechazado.
+  - `video without video track is rejected with NO_VIDEO_TRACK`: Archivo sin pista de video es rechazado.
+
+### Test T-F11-02: Escalador de Dimensiones con Reducción Previa (`VideoFrameScalerTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.video.VideoFrameScalerTest"`
+- **Resultado:** BUILD SUCCESSFUL (6 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados:**
+  - 1080p horizontal (1920x1080) escalado a max 640 px $\to$ 640x360.
+  - 1080p vertical (1080x1920) escalado a max 640 px $\to$ 360x640.
+  - Resolución baja (320x240) se mantiene sin reescalado innecesario.
+  - Cuadrado (1000x1000) mantiene aspecto (500x500).
+  - Dimensiones degeneradas $\le 0$ devuelven targetMaxDim.
+  - Parámetro por defecto coincide con `AnalysisConfig.VIDEO_DOWNSCALE_TARGET_MAX_DIM`.
+
+### Test T-F11-03: Corrección de Orientación y Reciclado de Bitmaps (`VideoFrameRotatorTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.video.VideoFrameRotatorTest"`
+- **Resultado:** BUILD SUCCESSFUL (5 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados en Robolectric:**
+  - 0° y 360° devuelven el mismo objeto `Bitmap` sin reciclarlo.
+  - 90° rota dimensiones (100x200 $\to$ 200x100) y recicla inmediatamente el original (`original.isRecycled == true`).
+  - 180° invierte dimensiones y recicla el original.
+  - 270° rota dimensiones y recicla el original.
+
+### Test T-F11-04: Orquestador Fuera de Línea (`OfflineVideoProcessorTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.video.OfflineVideoProcessorTest"`
+- **Resultado:** BUILD SUCCESSFUL (3 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados en Robolectric:**
+  - `rejected video stops immediately without extracting frames and closes resources (SC-28)`: Verifica que un video inválido no decodifique cuadros y libere recursos inmediatamente.
+  - `successful processing samples frames with intrinsic timestamps and recycles bitmaps`: Verifica muestreo secuencial con marcas de tiempo monótonamente crecientes, reciclado de todos los bitmaps creados (memoria acotada $O(1)$) y cierre de recursos.
+  - `cancellation aborts processing immediately and releases resources (SC-29)`: Cancela corrutina en vuelo y verifica aborto inmediato y cierre garantizado en bloque `finally`.
+
+### Test T-F11-05: ViewModel de Análisis de Video (`VideoAnalysisViewModelTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.video.VideoAnalysisViewModelTest"`
+- **Resultado:** BUILD SUCCESSFUL (4 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados con Turbine:**
+  - `initial state is idle`: Estado inicial con flags en falso y mensajes en null.
+  - `valid video completes and persists session as VIDEO`: Ejecuta análisis, actualiza `PracticeSessionHolder` con el resumen y persiste en Room con `mode = "VIDEO"` y `cameraFacing = "VIDEO"`.
+  - `video exceeding max duration is rejected with error message (SC-28)`: Rechaza anticipadamente y emite el string de error mapeado `video_err_too_long`. Descarte de error verificado.
+  - `cancelling analysis stops processing and sets cancel message (SC-29)`: Cancela la tarea, no persiste nada y emite `MSG_VIDEO_CANCEL`. Descarte de mensaje verificado.
+
+### Test T-F11-06: Verificación Integral de Regresión (167 tests totales)
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (167/167 tests unitarios en verde, 0 incidencias Detekt, 0 violaciones ktlint, assembleDebug OK).
+- **Desglose de pruebas unitarias:**
+  - `:analysis`: 97 pruebas unitarias (100% pasando).
+  - `:app`: 70 pruebas unitarias (100% pasando).
+  - Total: 167 pruebas unitarias.
 
 
 

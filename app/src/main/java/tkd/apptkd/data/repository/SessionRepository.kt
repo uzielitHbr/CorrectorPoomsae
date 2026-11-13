@@ -28,6 +28,7 @@ class SessionRepository @Inject constructor(
         cameraFacing: String = "FRONT",
         strictMode: Boolean = false,
         snapshotPaths: Map<Int, String> = emptyMap(),
+        mode: String = "LIVE",
     ): String {
         val sessionId = UUID.randomUUID().toString()
         val (sessionEntity, movementEntities) = SessionEntityMapper.toEntities(
@@ -35,6 +36,7 @@ class SessionRepository @Inject constructor(
             params = tkd.apptkd.data.room.SessionPersistParams(
                 sessionId = sessionId,
                 status = "COMPLETED",
+                mode = mode,
                 cameraFacing = cameraFacing,
                 strictMode = strictMode,
                 snapshotPaths = snapshotPaths,
@@ -50,6 +52,7 @@ class SessionRepository @Inject constructor(
         cameraFacing: String = "FRONT",
         strictMode: Boolean = false,
         snapshotPaths: Map<Int, String> = emptyMap(),
+        mode: String = "LIVE",
     ): String {
         val sessionId = UUID.randomUUID().toString()
         val (sessionEntity, movementEntities) = SessionEntityMapper.toEntities(
@@ -57,6 +60,7 @@ class SessionRepository @Inject constructor(
             params = tkd.apptkd.data.room.SessionPersistParams(
                 sessionId = sessionId,
                 status = "INCOMPLETE",
+                mode = mode,
                 cameraFacing = cameraFacing,
                 strictMode = strictMode,
                 snapshotPaths = snapshotPaths,
