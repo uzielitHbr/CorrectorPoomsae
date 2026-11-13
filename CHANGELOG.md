@@ -5,7 +5,24 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
-## [0.11.0] - 2026-11-12
+## [0.12.0] - 2026-11-12
+### Added
+- **Fase F12 (Calibración y validación con datos reales):**
+  - Implementación del evaluador normativo de estados de validación `ValidationStateEvaluator` según la Sección 16.5:
+    - Evaluación de modo experimental obligatorio (`isExperimental = true`) bajo `ValidationState.NO_VALIDADO`.
+    - Prohibición estricta de badges o textos afirmativos «Validado» (`canDisplayValidatedBadge = false`) mientras no se cumplan los criterios muestrales del Nivel 2 (`VALIDADO_ALCANCE_LIMITADO`).
+  - Formalización del documento `docs/VALIDATION_REPORT.md`:
+    - Declaración formal de no disponibilidad de grabaciones reales autorizadas con consentimiento informado (LFPDPPP/GDPR) ni evaluación independiente etiquetada por profesores/árbitros de poomsae.
+    - Prohibición estricta de simulación o invención de datos empíricos.
+    - Inventario tabular exhaustivo de los 37 parámetros en `AnalysisConfig` con valores de desarrollo y estado 100% `PENDIENTE_CALIBRAR`.
+    - Protocolo y hoja de ruta metodológica para futura calibración con practicantes reales (muestreo estratificado $N \ge 30$, curvas ROC, índice de Youden, panel ciego con Kappa de Fleiss $\ge 0.70$).
+  - Vinculación con la UI en `SummaryViewModel`:
+    - Exposición de `isExperimental` en `SummaryUiState` consumida por `SummaryScreen` para renderizar el banner obligatorio `MSG_EXPERIMENTAL` («Modo experimental: los resultados son orientativos.»).
+    - Verificación de avisos normativos `MSG_DISCLAIMER` y `MSG_UNVALIDATED` en vistas y exportador.
+  - 7 nuevas pruebas unitarias automatizadas (174 pruebas totales en el proyecto en verde):
+    - `ValidationStateEvaluatorTest` (4 pruebas en `:analysis`).
+    - `ExperimentalModeVerificationTest` (3 pruebas en `:app`).
+  - 0 incidencias Detekt, 0 violaciones ktlintCheck, `bash scripts/verify.sh` en verde.
 ### Added
 - **Fase F11 (Análisis de video grabado):**
   - Selector de video oficial del sistema mediante `ActivityResultContracts.PickVisualMedia` (`VisualMediaType.VideoOnly`), garantizando privacidad sin requerir permisos de almacenamiento en tiempo de ejecución.

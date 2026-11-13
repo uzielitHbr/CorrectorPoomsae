@@ -343,5 +343,41 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones registradas:** D-F11-01 a D-F11-05 en `docs/DECISIONS.md`.
 - **Siguiente paso:** Proceder a Fase F12 (Calibración empírica y reporte de validación).
 
+---
+
+## 2026-11-12 — Cierre de Fase F12: Calibración y validación con datos reales
+
+- **Fase:** F12 (Calibración y validación con datos reales)
+- **Objetivo:** Adoptar el marco formal de calibración y validación (Sección 16.5), documentar la ausencia de datos reales autorizados, mantener los umbrales en estado `PENDIENTE_CALIBRAR`, fijar la aplicación en modo experimental (`NO_VALIDADO`), y asegurar que la UI y reportes no exhiban la insignia «Validado».
+- **Cambios realizados:**
+  - Lógica de Validación Normativa (`:analysis`):
+    - `ValidationStateEvaluator.kt`: Componente puro en `:analysis` que implementa las reglas de la Sección 16.5:
+      - `isExperimental(state)`: Retorna `true` obligatoriamente bajo `ValidationState.NO_VALIDADO`.
+      - `canDisplayValidatedBadge(state)`: Retorna `false` para `NO_VALIDADO` y `VALIDACION_PRELIMINAR`; solo `true` al alcanzar `VALIDADO_ALCANCE_LIMITADO`.
+      - `getValidationStateDescription(state)`: Descripciones formales para auditoría y trazabilidad.
+  - Conexión con la Interfaz de Usuario (`:app`):
+    - `SummaryViewModel.kt`: Vinculación dinámica de `isExperimental = ValidationStateEvaluator.isExperimental()`, asegurando que `SummaryScreen` presente el banner obligatorio `MSG_EXPERIMENTAL` («Modo experimental: los resultados son orientativos.»).
+    - Verificación exhaustiva de recursos: Confirmación de que ningún texto, insignia o componente de la UI o exportador expone afirmativamente la palabra «Validado».
+    - Avisos normativos en `SummaryScreen`, `HomeScreen`, `PracticeScreen` y `SessionExporter`: Exhibición de `MSG_DISCLAIMER` y `MSG_UNVALIDATED`.
+  - Documento Formal de Validación (`docs/VALIDATION_REPORT.md`):
+    - Redacción exhaustiva y formal de `docs/VALIDATION_REPORT.md` estructurado en 7 secciones:
+      1. Resumen ejecutivo y estado normativo (`NO_VALIDADO`, parámetros 100% `PENDIENTE_CALIBRAR`).
+      2. Declaración formal de no disponibilidad de datos reales autorizados (prohibición estricta de simulación o invención de datos; cumplimiento de bioética y LFPDPPP/GDPR).
+      3. Inventario tabular exhaustivo de los 37 parámetros de `AnalysisConfig.kt` con valores de desarrollo, unidades, estado `PENDIENTE_CALIBRAR` y metodología empírica futura.
+      4. Niveles y criterios formales de validación (Nivel 0: `NO_VALIDADO`, Nivel 1: `VALIDACION_PRELIMINAR` $N \ge 30$, Nivel 2: `VALIDADO_ALCANCE_LIMITADO` $N \ge 30$, doble ciego, Kappa de Fleiss $\ge 0.70$).
+      5. Salvaguardas operativas de software en la interfaz de usuario y exportación.
+      6. Protocolo y hoja de ruta metodológica para futura captura con practicantes reales (curvas ROC, índice de Youden, optimización de bandas de puntaje).
+      7. Conclusiones y compromiso de integridad técnica.
+  - Pruebas Unitarias Automatizadas (7 nuevas pruebas, 174 totales en verde):
+    - `ValidationStateEvaluatorTest.kt` en `:analysis` (4 pruebas: estado por defecto del sistema `NO_VALIDADO` y `PENDIENTE_CALIBRAR`, evaluación de `isExperimental`, restricción estricta de `canDisplayValidatedBadge`, cobertura descriptiva exhaustiva de enum).
+    - `ExperimentalModeVerificationTest.kt` en `:app` (3 pruebas: verificación de invariantes en `AnalysisConfig`, restricción de insignias en `ValidationStateEvaluator`, propagación reactiva de `isExperimental = true` en `SummaryViewModel`).
+- **Pruebas ejecutadas:**
+  - `./gradlew :analysis:test :app:testDebugUnitTest` (OK — 174/174 pruebas unitarias en verde).
+  - `./gradlew ktlintCheck detekt` (OK — 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — compilación debug, 174 pruebas, análisis estático y formateo en verde).
+- **Decisiones registradas:** D-F12-01 en `docs/DECISIONS.md`.
+- **Siguiente paso:** Proceder a Fase F13 (Cierre, empaquetado y entrega final del sistema).
+
+
 
 

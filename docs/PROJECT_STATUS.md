@@ -1,6 +1,6 @@
 PROYECTO: Taegeuk Coach (nombre provisional)
 VERSION DEL DOCUMENTO DE ESPECIFICACION: 3.0
-ULTIMA ACTUALIZACION: 2026-11-12 por Sesión Agente Autónomo (Cierre Fase F11)
+ULTIMA ACTUALIZACION: 2026-11-12 por Sesión Agente Autónomo (Cierre Fase F12)
 
 FASES
  F0 [aprobada 2026-11-11 etiqueta phase-F0-complete]
@@ -15,13 +15,13 @@ FASES
  F9 [aprobada 2026-11-12 etiqueta phase-F9-complete]
  F10 [aprobada 2026-11-12 etiqueta phase-F10-complete]
  F11 [aprobada 2026-11-12 etiqueta phase-F11-complete]
- F12 [pendiente]
+ F12 [aprobada 2026-11-12 etiqueta phase-F12-complete]
  F13 [pendiente]
 
-FASE ACTUAL: F12 TAREA ACTUAL: Preparación de Fase F12 (Calibración empírica y reporte de validación)
-ULTIMA ETIQUETA APROBADA: phase-F11-complete
-LINEA BASE (ultimo resultado): assembleDebug ok, test (167/167 :analysis + :app) ok, detekt (0 issues) ok, ktlintCheck (0 issues) ok, selector PickVisualMedia, MediaMetadataRetriever decodificación con memoria acotada O(1), rechazo anticipado SC-28, cancelación inmediata SC-29
+FASE ACTUAL: F13 TAREA ACTUAL: Preparación de Fase F13 (Cierre, empaquetado y entrega final)
+ULTIMA ETIQUETA APROBADA: phase-F12-complete
+LINEA BASE (ultimo resultado): assembleDebug ok, test (174/174 :analysis + :app) ok, detekt (0 issues) ok, ktlintCheck (0 issues) ok, ValidationStateEvaluator (Sección 16.5), estado NO_VALIDADO (modo experimental garantizado), parámetros 100% PENDIENTE_CALIBRAR, VALIDATION_REPORT.md formalizado
 BLOQUEOS ABIERTOS (necesitan al humano): Ninguno
 SUPUESTOS ABIERTOS: [ASM-001, ASM-002, ASM-003, ASM-004]
 PROBLEMAS CONOCIDOS: Ninguno
-SIGUIENTE PASO RECOMENDADO: Iniciar Fase F12 (Calibración empírica de umbrales en AnalysisConfig y redacción de VALIDATION_REPORT.md).
+SIGUIENTE PASO RECOMENDADO: Iniciar Fase F13 (Auditoría final, empaquetado release, y documentación de entrega).
