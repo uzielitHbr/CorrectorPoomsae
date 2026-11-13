@@ -31,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -172,7 +174,11 @@ fun HomeContent(
                     )
                 },
                 actions = {
-                    IconButton(onClick = callbacks.onNavigateToSettings) {
+                    val settingsCd = stringResource(id = R.string.cd_navigate_settings)
+                    IconButton(
+                        onClick = callbacks.onNavigateToSettings,
+                        modifier = Modifier.semantics { contentDescription = settingsCd },
+                    ) {
                         Text(text = "⚙", style = MaterialTheme.typography.titleMedium)
                     }
                 },

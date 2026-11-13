@@ -38,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -86,7 +88,11 @@ fun HistoryScreen(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.screen_history)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
+                    val backCd = stringResource(id = R.string.cd_navigate_back)
+                    IconButton(
+                        onClick = onNavigateBack,
+                        modifier = Modifier.semantics { contentDescription = backCd },
+                    ) {
                         Text(text = "←", style = MaterialTheme.typography.titleMedium)
                     }
                 },
@@ -301,10 +307,18 @@ internal fun HistorySessionCard(
                 }
 
                 Row {
-                    IconButton(onClick = onExport) {
+                    val exportCd = stringResource(id = R.string.cd_export_session)
+                    val deleteCd = stringResource(id = R.string.cd_delete_session)
+                    IconButton(
+                        onClick = onExport,
+                        modifier = Modifier.semantics { contentDescription = exportCd },
+                    ) {
                         Text(text = "↗", style = MaterialTheme.typography.titleMedium)
                     }
-                    IconButton(onClick = onDelete) {
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.semantics { contentDescription = deleteCd },
+                    ) {
                         Text(
                             text = "✕",
                             style = MaterialTheme.typography.titleMedium,

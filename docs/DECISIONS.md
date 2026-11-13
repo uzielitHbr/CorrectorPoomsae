@@ -260,6 +260,22 @@
     3. Asegura que la interfaz (`HomeScreen`, `PracticeScreen`, `SummaryScreen`, `HistoryScreen`) y el motor de exportación (`SessionExporter`) muestren los avisos obligatorios `MSG_EXPERIMENTAL`, `MSG_DISCLAIMER` y `MSG_UNVALIDATED`.
   - **Documentación:** Se emite el informe formal exhaustivo `docs/VALIDATION_REPORT.md` con el inventario completo de los 37 parámetros, el protocolo de calibración biométrica futura y los criterios formales para transitar a los niveles 1 y 2.
 
+---
+
+## 9. Decisiones Técnicas Específicas de la Fase F13 (Cierre, Calidad Final y Empaquetado v1.0.0)
+
+### D-F13-01: Configuración de Compilación Release, Reglas ProGuard/R8, Auditorías y Empaquetado
+- **Fecha:** 13 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación Oficial (Sección 16.6):**
+  - **Reducción de Código y Recursos (R8 / ProGuard):** Se activaron `isMinifyEnabled = true` e `isShrinkResources = true`. Se redactó exhaustivamente `app/proguard-rules.pro` conservando clases y métodos nativos JNI de MediaPipe (`com.google.mediapipe.**`), serializadores de `kotlinx.serialization`, entidades/DAOs de Room (`androidx.room.**`), modelos inmutables de `:analysis` y componentes Hilt/DataStore. Se agregaron reglas `-dontwarn` para protobufs opcionales de MediaPipe.
+  - **Auditoría de Accesibilidad:** Se integraron semánticas `contentDescription` en todos los controles `IconButton` interactivos (retroceso, ajustes, exportar, borrar, pausar, cerrar, descartar banner). Se verificó la adaptabilidad a escalado de fuentes al 200% mediante `verticalScroll` y contenedor scrollable en `ConfirmDialog`.
+  - **Auditoría de Permisos (Sin Red):** Se auditó `AndroidManifest.xml` confirmando que únicamente se solicita `android.permission.CAMERA`. Se confirmó la ausencia total de `android.permission.INTERNET`, garantizando que la app opera 100% desconectada y fuera de línea sin fugas de datos.
+  - **Transparencia y Privacidad:** Se integraron diálogos modales en Ajustes para el Aviso de Privacidad Integral (explicando procesamiento local y borrado permanente) y las Licencias de Terceros de Código Abierto (Apache 2.0).
+  - **Generación de Artefacto Release:** Se ejecutó `assembleRelease` produciendo el APK optimizado `app-release.apk` con hash SHA-256 `b13c3fae2db711f9bd85620ad6f92c06e183787f2c7c15c72e788b6c1f4ae4c4`. La firma con la clave privada de producción del usuario queda registrada formalmente como Pendiente Externo.
+  - **Lista de Verificación Global:** Se completó y auditó al 100% la lista de verificación del Apéndice D en `docs/CHECKLIST_APPENDIX_D.md`.
+
+
 
 
 

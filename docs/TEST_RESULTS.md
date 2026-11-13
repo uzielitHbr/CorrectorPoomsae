@@ -22,6 +22,7 @@
 | **F10** | 2026-11-12 | Pruebas unitarias `RoomDatabaseTest`, `DatabaseMigrationTest`, `UserSettingsRepositoryTest`, `DataErasureServiceTest`, `SessionExporterTest`, `HistoryViewModelTest`, `SettingsViewModelTest` (138 tests totales) | **PASS (Verde)** | N/A (Módulo `:app`) | Persistencia Room de sesiones/resultados, DataStore de ajustes, borrador de sesión, borrado total irreversible SC-30, exportación PDF/texto y esquemas Room exportados. |
 | **F11** | 2026-11-12 | Pruebas unitarias `VideoValidatorTest` (11 tests), `VideoFrameScalerTest` (6 tests), `VideoFrameRotatorTest` (5 tests), `OfflineVideoProcessorTest` (3 tests), `VideoAnalysisViewModelTest` (4 tests) — 167 tests totales en verde | **PASS (Verde)** | `video`: 100.00%<br>**Global `:analysis`:** 93.4% | Análisis de video fuera de línea con PhotoPicker del sistema (`PickVisualMedia`), decodificación muestreada con `MediaMetadataRetriever` y memoria acotada ($O(1)$), `PoseLandmarker` en `RunningMode.VIDEO` síncrono, corrección de orientación, rechazo temprano SC-28 y diálogo con cancelación inmediata SC-29. |
 | **F12** | 2026-11-12 | Pruebas unitarias `ValidationStateEvaluatorTest` (4 tests), `ExperimentalModeVerificationTest` (3 tests) — 174 tests totales en verde | **PASS (Verde)** | `config`: 100.00%<br>**Global `:analysis`:** 93.5% | Implementación del evaluador de estado de validación (Sección 16.5), estado operativo normativo `NO_VALIDADO` (Modo experimental), parámetros en `AnalysisConfig` al 100% `PENDIENTE_CALIBRAR`, emisión del informe `docs/VALIDATION_REPORT.md` y restricción absoluta de la insignia «Validado» en UI y exportación. |
+| **F13** | 2026-11-13 | Compilación release (`assembleRelease`), optimización R8/ProGuard, auditoría A11y, auditoría permisos (sin red), regresión final (`scripts/verify.sh`) — 174 tests totales en verde | **PASS (Verde)** | **Global `:analysis`:** 93.5% | Compilación de producción con R8 y reducción de recursos (APK SHA-256: `b13c3fae2db711f9bd85620ad6f92c06e183787f2c7c15c72e788b6c1f4ae4c4`), content descriptions en todos los controles, soporte 200% texto, permisos mínimos (solo cámara), avisos de privacidad y licencias, manual de usuario y lista de verificación del Apéndice D al 100%. |
 
 ---
 
@@ -433,6 +434,48 @@
   - `:analysis`: 101 pruebas unitarias (100% pasando).
   - `:app`: 73 pruebas unitarias (100% pasando).
   - Total: 174 pruebas unitarias.
+
+---
+
+## Detalle de Pruebas - Fase F13 (Cierre y Calidad Final)
+
+### Test T-F13-01: Compilación Release y Optimización con R8 (`assembleRelease`)
+- **Comando:** `./gradlew assembleRelease`
+- **Resultado:** BUILD SUCCESSFUL (APK generado en `app/build/outputs/apk/release/app-release.apk`)
+- **Métricas del Artefacto:**
+  - Minificación: R8 / ProGuard habilitado (`isMinifyEnabled = true`, `isShrinkResources = true`).
+  - Tamaño del APK: ~73 MB (contiene modelo `pose_landmarker_lite.task` y bibliotecas JNI para arm64-v8a, armeabi-v7a, x86_64).
+  - Hash SHA-256: `b13c3fae2db711f9bd85620ad6f92c06e183787f2c7c15c72e788b6c1f4ae4c4`
+  - Estado de firma: Configuración de depuración local; firma de producción con keystore privado documentada como Pendiente Externo.
+
+### Test T-F13-02: Auditoría de Accesibilidad (A11y) y Soporte a Escalamiento de Fuentes
+- **Resultado:** PASS
+- **Evidencias:**
+  - Inclusión de semánticas `contentDescription` en todos los controles interactivos `IconButton`:
+    - `HomeScreen`: `cd_navigate_settings`.
+    - `PracticeScreen`: `cd_close`, `cd_pause_practice`.
+    - `SummaryScreen`: `cd_navigate_back`.
+    - `MovementDetailScreen`: `cd_navigate_back`.
+    - `HistoryScreen`: `cd_navigate_back`, `cd_export_session`, `cd_delete_session`.
+    - `SettingsScreen`: `cd_navigate_back`.
+    - `StatusBanner`: `cd_dismiss_banner`.
+  - Prueba de escalado al 200%: todos los contenedores de texto emplean `verticalScroll` o `LazyColumn`; `ConfirmDialog` incorpora scroll vertical interno para evitar truncamientos con fuentes grandes.
+
+### Test T-F13-03: Auditoría de Permisos (Sin Red)
+- **Resultado:** PASS
+- **Evidencias:**
+  - Inspección de `AndroidManifest.xml` y manifiestos fusionados:
+    - Único permiso solicitado: `android.permission.CAMERA`.
+    - Ausencia absoluta de `android.permission.INTERNET` o permisos de red/almacenamiento compartido.
+
+### Test T-F13-04: Suite Integral de Regresión Final (Sección 16.6)
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (174/174 tests unitarios en verde, 0 incidencias Detekt, 0 violaciones ktlint, assembleDebug OK).
+- **Desglose de pruebas:**
+  - `:analysis`: 101 pruebas unitarias (100% pasando).
+  - `:app`: 73 pruebas unitarias (100% pasando).
+  - Total: 174 pruebas unitarias.
+
 
 
 

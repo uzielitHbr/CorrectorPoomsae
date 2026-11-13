@@ -212,4 +212,23 @@
     <string name="db_migration_error_title">Error en la base de datos</string>
     <string name="db_migration_error_message">Se produjo un error al actualizar los datos guardados. Se ha creado una copia de seguridad en el dispositivo. ¿Deseas restablecer los datos locales para continuar?</string>
     <string name="btn_reset_local_data">Restablecer datos locales</string>
+
+    <!-- Accesibilidad y Descripciones de Contenido (F13) -->
+    <string name="cd_navigate_back">Regresar a la pantalla anterior</string>
+    <string name="cd_close">Cerrar</string>
+    <string name="cd_navigate_settings">Abrir ajustes de la aplicación</string>
+    <string name="cd_export_session">Exportar resumen de práctica</string>
+    <string name="cd_delete_session">Eliminar práctica del historial</string>
+    <string name="cd_pause_practice">Pausar práctica</string>
+    <string name="cd_dismiss_banner">Descartar aviso</string>
+    <string name="cd_turn_direction">Flecha indicadora de giro</string>
+
+    <!-- Transparencia y Legal (F13) -->
+    <string name="settings_licenses_title">Licencias de código abierto</string>
+    <string name="settings_licenses_desc">Software de terceros y bibliotecas utilizadas</string>
+    <string name="settings_privacy_full_title">Aviso de Privacidad Integral</string>
+    <string name="settings_privacy_full_btn">Ver aviso completo</string>
+    <string name="settings_privacy_full_content">Taegeuk Coach opera bajo el principio de estricta privacidad desde el diseño:\n\n1. Procesamiento 100% en el dispositivo: Las imágenes de la cámara y los cuadros de video seleccionados son procesados en tiempo real o fuera de línea exclusivamente en el procesador de tu dispositivo mediante MediaPipe Pose Landmarker.\n\n2. Cero transmisión de red: La aplicación no solicita ni utiliza el permiso de internet (android.permission.INTERNET). Ningún dato visual, biométrico ni estadístico sale de tu teléfono.\n\n3. Almacenamiento local seguro: Las sesiones, métricas y preferencias se guardan exclusivamente en la base de datos interna privada SQLite/Room de la aplicación. Las capturas clave se almacenan en el directorio privado de archivos.\n\n4. Control y borrado irreversible: Tienes el derecho en todo momento de eliminar prácticas individuales o ejecutar un «Borrado total de datos» desde esta pantalla, lo cual destruye de forma inmediata e irrecuperable toda la información registrada.</string>
+    <string name="settings_licenses_dialog_title">Licencias de Terceros</string>
+    <string name="settings_licenses_dialog_content">Taegeuk Coach utiliza las siguientes bibliotecas y modelos de código abierto:\n\n• Google MediaPipe Pose Landmarker\n  Licencia: Apache License 2.0\n  Copyright 2023 The MediaPipe Authors\n\n• Android Jetpack (Compose, CameraX, Room, DataStore, Navigation, Lifecycle)\n  Licencia: Apache License 2.0\n  Copyright The Android Open Source Project\n\n• Google Dagger / Hilt\n  Licencia: Apache License 2.0\n  Copyright 2020 The Dagger Authors\n\n• Kotlin &amp; Kotlinx (Coroutines, Serialization)\n  Licencia: Apache License 2.0\n  Copyright 2010-2024 JetBrains s.r.o.\n\n• Turbine &amp; MockK (Pruebas unitarias)\n  Licencia: Apache License 2.0\n\nTexto de la Licencia Apache 2.0 disponible en:\nhttps://www.apache.org/licenses/LICENSE-2.0</string>
 </resources>

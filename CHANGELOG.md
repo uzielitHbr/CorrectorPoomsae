@@ -5,7 +5,26 @@ El formato se basa en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/
 
 ## [Unreleased]
 
-## [0.12.0] - 2026-11-12
+## [1.0.0] - 2026-11-13
+### Added
+- **Fase F13 (Cierre, calidad final y empaquetado release):**
+  - Configuración del tipo de compilación `release` con minificación de código (`isMinifyEnabled = true`) y reducción de recursos (`isShrinkResources = true`).
+  - Reglas exhaustivas de conservación ProGuard/R8 en `app/proguard-rules.pro` para MediaPipe Pose Landmarker, métodos JNI, `kotlinx.serialization`, Room Database, modelos matemáticos de `:analysis`, DataStore y Hilt.
+  - Artefacto release generado exitosamente: `app-release.apk` con SHA-256 `b13c3fae2db711f9bd85620ad6f92c06e183787f2c7c15c72e788b6c1f4ae4c4`.
+  - Auditoría de accesibilidad completa (A11y):
+    - Inclusión de semánticas `contentDescription` en todos los controles interactivos `IconButton` (retroceso, navegación a ajustes, exportación, borrado, pausar, cerrar y descarte de avisos).
+    - Soporte verificado para escalado de texto al 200% sin truncamiento mediante `verticalScroll` y contenedor scrollable en `ConfirmDialog`.
+  - Auditoría de permisos de Android:
+    - Verificación formal de que únicamente se solicita `android.permission.CAMERA`.
+    - Ausencia total de permisos de red (`android.permission.INTERNET`), garantizando privacidad y procesamiento 100% desconectado.
+  - Transparencia y cumplimiento normativo:
+    - Integración de diálogo de Aviso de Privacidad Integral en `SettingsScreen`.
+    - Integración de diálogo de Licencias de Terceros de Código Abierto (Apache 2.0).
+  - Documentación final de entrega:
+    - Manual de usuario estructurado de una página en `docs/USER_MANUAL.md`.
+    - Actualización exhaustiva de `README.md` (arquitectura, limitaciones, instalación y compilación).
+    - Verificación y completado al 100% de la Lista de Verificación Global del Apéndice D en `docs/CHECKLIST_APPENDIX_D.md`.
+  - Verificación de regresión integral: 174/174 pruebas unitarias en verde, 0 incidencias Detekt, 0 violaciones ktlint, suite `bash scripts/verify.sh` en verde.
 ### Added
 - **Fase F12 (Calibración y validación con datos reales):**
   - Implementación del evaluador normativo de estados de validación `ValidationStateEvaluator` según la Sección 16.5:

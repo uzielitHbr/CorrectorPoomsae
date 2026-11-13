@@ -378,6 +378,40 @@ Historial cronológico de cambios de ingeniería del proyecto Taegeuk Coach, en 
 - **Decisiones registradas:** D-F12-01 en `docs/DECISIONS.md`.
 - **Siguiente paso:** Proceder a Fase F13 (Cierre, empaquetado y entrega final del sistema).
 
+---
+
+## 2026-11-13 — Cierre de Fase F13: Cierre, calidad final y entrega v1.0.0
+
+- **Fase:** F13 (Cierre y calidad final)
+- **Objetivo:** Entregar la versión estable final (v1.0.0), documentada, optimizada y empaquetada para su distribución, completando la lista de verificación del Apéndice D.
+- **Cambios realizados:**
+  - Configuración y Optimización de Compilación Release (`app/build.gradle.kts` y `app/proguard-rules.pro`):
+    - Activación de `isMinifyEnabled = true` e `isShrinkResources = true`.
+    - `versionName = "1.0.0"`.
+    - Reglas exhaustivas de conservación ProGuard/R8 para MediaPipe Pose Landmarker, métodos nativos JNI, serializadores de `kotlinx.serialization`, entidades y DAOs de Room, modelos matemáticos inmutables de `:analysis`, DataStore y Hilt.
+    - Reglas `-dontwarn` para protobufs opcionales de MediaPipe.
+    - Ejecución de `assembleRelease` produciendo `app-release.apk` con hash SHA-256 `b13c3fae2db711f9bd85620ad6f92c06e183787f2c7c15c72e788b6c1f4ae4c4`.
+  - Auditoría de Accesibilidad (A11y):
+    - Integración de semánticas de `contentDescription` en todos los controles interactivos `IconButton` en Compose: botones de retroceso (`cd_navigate_back`), ajustes (`cd_navigate_settings`), exportación (`cd_export_session`), borrado (`cd_delete_session`), pausar (`cd_pause_practice`), cerrar (`cd_close`), y descarte de banners (`cd_dismiss_banner`).
+    - Soporte completo a escalado de fuentes al 200%: adición de `verticalScroll` y contenedor scrollable en `ConfirmDialog` para evitar cualquier desbordamiento o truncamiento visual.
+  - Auditoría de Permisos (Sin Red):
+    - Verificación formal de `AndroidManifest.xml`: se confirma que solo se solicita `android.permission.CAMERA`. Se constata la ausencia absoluta de `android.permission.INTERNET`, garantizando operación 100% desconectada y fuera de línea sin transmisión de datos al exterior.
+  - Transparencia y Protección de Datos:
+    - Integración de diálogo modal de Aviso de Privacidad Integral en `SettingsScreen.kt` explicando procesamiento local, ausencia de red y derecho al borrado permanente.
+    - Integración de diálogo modal de Licencias de Terceros de Código Abierto (Apache 2.0 para MediaPipe, Jetpack, Compose, Room, Kotlin, Hilt).
+  - Documentación de Entrega:
+    - Redacción del manual de usuario estructurado en `docs/USER_MANUAL.md`.
+    - Actualización integral de `README.md` con arquitectura, pipeline, comandos de verificación, advertencias normativas, limitaciones y hashes del artefacto release.
+    - Creación y verificación íntegra de la Lista de Verificación Global del Apéndice D en `docs/CHECKLIST_APPENDIX_D.md`.
+- **Pruebas ejecutadas:**
+  - `./gradlew assembleRelease` (OK — compilación release optimizada con R8).
+  - `./gradlew :analysis:test :app:testDebugUnitTest` (OK — 174/174 pruebas unitarias en verde).
+  - `./gradlew ktlintCheck detekt` (OK — 0 incidencias Detekt, 0 violaciones ktlint).
+  - `bash scripts/verify.sh` (OK — verificación integral en verde).
+- **Decisiones registradas:** D-F13-01 en `docs/DECISIONS.md`.
+- **Etiqueta Git:** `v1.0.0`
+
+
 
 
 
