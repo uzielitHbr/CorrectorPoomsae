@@ -27,6 +27,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,7 +110,11 @@ fun SummaryContent(
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.screen_summary)) },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateToHome) {
+                    val backCd = stringResource(id = R.string.cd_navigate_back)
+                    IconButton(
+                        onClick = onNavigateToHome,
+                        modifier = Modifier.semantics { contentDescription = backCd },
+                    ) {
                         Text(
                             text = "←",
                             style = MaterialTheme.typography.titleLarge,
@@ -137,25 +143,7 @@ fun SummaryContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    ScoreRing(score = uiState.globalScore)
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(
-                            id = R.string.summary_counts_format,
-                            uiState.evaluableCount,
-                            uiState.partialCount,
-                            uiState.notEvaluableCount,
-                        ),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    if (uiState.isExperimental) {
-                        StatusBanner(text = stringResource(id = R.string.MSG_EXPERIMENTAL))
-                    }
-                    Spacer(modifier = Modifier.height(12.dp))
+                    SummaryHeader(uiState = uiState)
                 }
 
                 items(uiState.movements, key = { it.index }) { mov ->
@@ -184,25 +172,60 @@ fun SummaryContent(
                 }
             }
 
-            // Barra inferior fija con acciones principales
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                SecondaryButton(
-                    text = stringResource(id = R.string.btn_share),
-                    onClick = onShareClick,
-                    modifier = Modifier.weight(1f),
-                )
-                PrimaryButton(
-                    text = stringResource(id = R.string.btn_practice_again),
-                    onClick = onNavigateToHome,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            SummaryActions(
+                onShareClick = onShareClick,
+                onNavigateToHome = onNavigateToHome,
+            )
         }
+    }
+}
+
+@Composable
+private fun SummaryHeader(uiState: SummaryUiState) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Spacer(modifier = Modifier.height(8.dp))
+        ScoreRing(score = uiState.globalScore)
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            text = stringResource(
+                id = R.string.summary_counts_format,
+                uiState.evaluableCount,
+                uiState.partialCount,
+                uiState.notEvaluableCount,
+            ),
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (uiState.isExperimental) {
+            StatusBanner(text = stringResource(id = R.string.MSG_EXPERIMENTAL))
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+    }
+}
+
+@Composable
+private fun SummaryActions(
+    onShareClick: () -> Unit,
+    onNavigateToHome: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        SecondaryButton(
+            text = stringResource(id = R.string.btn_share),
+            onClick = onShareClick,
+            modifier = Modifier.weight(1f),
+        )
+        PrimaryButton(
+            text = stringResource(id = R.string.btn_practice_again),
+            onClick = onNavigateToHome,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 

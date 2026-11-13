@@ -14,8 +14,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import tkd.apptkd.R
 
 /**
  * Banner persistente para advertencias normativas obligatorias (Sección 14.6, R-14, SC-24 y SC-25).
@@ -57,7 +61,11 @@ fun StatusBanner(
                 textAlign = if (onDismiss == null) TextAlign.Center else TextAlign.Start,
             )
             if (onDismiss != null) {
-                IconButton(onClick = onDismiss) {
+                val dismissCd = stringResource(id = R.string.cd_dismiss_banner)
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.semantics { contentDescription = dismissCd },
+                ) {
                     Text(text = "✕", style = MaterialTheme.typography.bodyMedium)
                 }
             }

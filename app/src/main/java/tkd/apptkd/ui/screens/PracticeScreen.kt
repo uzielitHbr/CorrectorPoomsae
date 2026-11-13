@@ -42,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -309,7 +311,12 @@ private fun PracticeTopBar(
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(onClick = { onAction(PracticeAction.SetExitDialogVisible(true)) }) {
+            val closeCd = stringResource(id = R.string.cd_close)
+            val pauseCd = stringResource(id = R.string.cd_pause_practice)
+            IconButton(
+                onClick = { onAction(PracticeAction.SetExitDialogVisible(true)) },
+                modifier = Modifier.semantics { contentDescription = closeCd },
+            ) {
                 Text(text = "✕", color = Color.White, style = MaterialTheme.typography.titleMedium)
             }
             Text(
@@ -319,7 +326,10 @@ private fun PracticeTopBar(
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
             )
-            IconButton(onClick = { onAction(PracticeAction.Pause) }) {
+            IconButton(
+                onClick = { onAction(PracticeAction.Pause) },
+                modifier = Modifier.semantics { contentDescription = pauseCd },
+            ) {
                 Text(text = "⏸", color = Color.White, style = MaterialTheme.typography.titleMedium)
             }
         }
