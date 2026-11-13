@@ -244,6 +244,23 @@
     - Los fallos emiten mensajes específicos en español de México (`video_err_too_long`, `video_err_too_large`, `video_err_resolution_too_high`, `video_err_unsupported_format`).
   - **SC-29:** La interfaz presenta un diálogo modal `VideoProcessingDialog` con porcentaje y botón «Cancelar». Al pulsar cancelar, la corrutina se cancela inmediatamente (`currentCoroutineContext().isActive`), el bucle de decodificación finaliza en la siguiente verificación (~66 ms), se liberan los recursos nativos (`retriever.release()`, `detector.close()`), no se persiste nada en base de datos ni borrador, y se muestra el aviso «Análisis cancelado» (`MSG_VIDEO_CANCEL`).
 
+---
+
+## 8. Decisiones Técnicas Específicas de la Fase F12 (Calibración y Validación con Datos Reales)
+
+### D-F12-01: Adopción del Estado Normativo NO_VALIDADO y Salvaguarda de Parámetros PENDIENTE_CALIBRAR
+- **Fecha:** 12 de noviembre de 2026
+- **Estado:** Aprobado / Implementado
+- **Justificación Oficial (Sección 16.5 y R-05):**
+  - **Restricción Estricta de Integridad de Datos:** Al no contar en la fase actual de desarrollo autónomo con grabaciones biométricas humanas bajo consentimiento informado (LFPDPPP/GDPR) ni con un panel ciego de jueces o instructores certificados (4.° Dan Kukkiwon / árbitros oficiales de poomsae), se prohíbe explícitamente simular o inventar datos empíricos.
+  - **Conservación de Ciclo de Vida de Parámetros:** Todos los parámetros heurísticos y cinemáticos en `AnalysisConfig` se mantienen en estado `ParameterCalibrationStatus.PENDIENTE_CALIBRAR`. No se alteran ni forzan valores mágicos.
+  - **Operación en Modo Experimental:** Se formaliza el estado `ValidationState.NO_VALIDADO`. La clase evaluadora `ValidationStateEvaluator`:
+    1. Garantiza `isExperimental() == true`.
+    2. Prohíbe terminantemente la exhibición de insignias o textos afirmativos «Validado» (`canDisplayValidatedBadge() == false`).
+    3. Asegura que la interfaz (`HomeScreen`, `PracticeScreen`, `SummaryScreen`, `HistoryScreen`) y el motor de exportación (`SessionExporter`) muestren los avisos obligatorios `MSG_EXPERIMENTAL`, `MSG_DISCLAIMER` y `MSG_UNVALIDATED`.
+  - **Documentación:** Se emite el informe formal exhaustivo `docs/VALIDATION_REPORT.md` con el inventario completo de los 37 parámetros, el protocolo de calibración biométrica futura y los criterios formales para transitar a los niveles 1 y 2.
+
+
 
 
 

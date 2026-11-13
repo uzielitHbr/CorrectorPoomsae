@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import mx.taekwondo.poomsae.analysis.config.ValidationStateEvaluator
 import mx.taekwondo.poomsae.analysis.evaluation.MovementCategory
 import tkd.apptkd.data.room.SessionEntityMapper
 import tkd.apptkd.data.room.SessionWithMovements
@@ -65,7 +66,7 @@ class SummaryViewModel @Inject constructor(
                             partialCount = summary.partialCount,
                             notEvaluableCount = summary.notEvaluableCount,
                             movements = movementCards,
-                            isExperimental = true,
+                            isExperimental = ValidationStateEvaluator.isExperimental(),
                         )
                     }
                 }

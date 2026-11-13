@@ -21,6 +21,7 @@
 | **F9** | 2026-11-12 | Pruebas unitarias `HomeViewModelTest`, `PracticeViewModelTest`, `SummaryViewModelTest`, `MovementDetailViewModelTest`, previews Compose, Turbine | **PASS (Verde)** | N/A (Módulo `:app`) | Pantallas Inicio, Práctica vertical bloqueada, Resumen, Detalle. Superposiciones de esqueleto y flechas de giro. Vistas previas @Preview y tokens M3. |
 | **F10** | 2026-11-12 | Pruebas unitarias `RoomDatabaseTest`, `DatabaseMigrationTest`, `UserSettingsRepositoryTest`, `DataErasureServiceTest`, `SessionExporterTest`, `HistoryViewModelTest`, `SettingsViewModelTest` (138 tests totales) | **PASS (Verde)** | N/A (Módulo `:app`) | Persistencia Room de sesiones/resultados, DataStore de ajustes, borrador de sesión, borrado total irreversible SC-30, exportación PDF/texto y esquemas Room exportados. |
 | **F11** | 2026-11-12 | Pruebas unitarias `VideoValidatorTest` (11 tests), `VideoFrameScalerTest` (6 tests), `VideoFrameRotatorTest` (5 tests), `OfflineVideoProcessorTest` (3 tests), `VideoAnalysisViewModelTest` (4 tests) — 167 tests totales en verde | **PASS (Verde)** | `video`: 100.00%<br>**Global `:analysis`:** 93.4% | Análisis de video fuera de línea con PhotoPicker del sistema (`PickVisualMedia`), decodificación muestreada con `MediaMetadataRetriever` y memoria acotada ($O(1)$), `PoseLandmarker` en `RunningMode.VIDEO` síncrono, corrección de orientación, rechazo temprano SC-28 y diálogo con cancelación inmediata SC-29. |
+| **F12** | 2026-11-12 | Pruebas unitarias `ValidationStateEvaluatorTest` (4 tests), `ExperimentalModeVerificationTest` (3 tests) — 174 tests totales en verde | **PASS (Verde)** | `config`: 100.00%<br>**Global `:analysis`:** 93.5% | Implementación del evaluador de estado de validación (Sección 16.5), estado operativo normativo `NO_VALIDADO` (Modo experimental), parámetros en `AnalysisConfig` al 100% `PENDIENTE_CALIBRAR`, emisión del informe `docs/VALIDATION_REPORT.md` y restricción absoluta de la insignia «Validado» en UI y exportación. |
 
 ---
 
@@ -403,6 +404,36 @@
   - `:analysis`: 97 pruebas unitarias (100% pasando).
   - `:app`: 70 pruebas unitarias (100% pasando).
   - Total: 167 pruebas unitarias.
+
+---
+
+## Detalle de Pruebas - Fase F12
+
+### Test T-F12-01: Evaluador de Estados de Validación (`ValidationStateEvaluatorTest`)
+- **Comando:** `./gradlew :analysis:test --tests "mx.taekwondo.poomsae.analysis.config.ValidationStateEvaluatorTest"`
+- **Resultado:** BUILD SUCCESSFUL (4 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados:**
+  - `testDefaultSystemStateIsNoValidadoAndPendienteCalibrar`: Comprueba que `AnalysisConfig.VALIDATION_STATE` es `ValidationState.NO_VALIDADO` y `CALIBRATION_STATUS` es `ParameterCalibrationStatus.PENDIENTE_CALIBRAR`.
+  - `testIsExperimentalReturnsTrueOnlyForNoValidado`: Verifica que `isExperimental()` devuelva `true` únicamente en `NO_VALIDADO` (por defecto y de forma explícita) y `false` en `VALIDACION_PRELIMINAR` y `VALIDADO_ALCANCE_LIMITADO`.
+  - `testCanDisplayValidatedBadgeReturnsTrueOnlyForValidadoAlcanceLimitado`: Verifica la regla estricta de la Sección 16.5; devuelve `false` en `NO_VALIDADO` y `VALIDACION_PRELIMINAR`, y únicamente `true` al alcanzar `VALIDADO_ALCANCE_LIMITADO`.
+  - `testGetValidationStateDescriptionCoversAllEnumEntries`: Cobertura exhaustiva de descripciones textuales para auditoría en todos los valores del enum.
+
+### Test T-F12-02: Garantías de Interfaz y Modo Experimental (`ExperimentalModeVerificationTest`)
+- **Comando:** `./gradlew :app:testDebugUnitTest --tests "tkd.apptkd.ui.ExperimentalModeVerificationTest"`
+- **Resultado:** BUILD SUCCESSFUL (3 tests ejecutados, 0 fallos, 0 omitidos)
+- **Casos probados:**
+  - `system configuration enforces NO_VALIDADO and PENDIENTE_CALIBRAR`: Verificación a nivel de integración entre el módulo Android y la configuración de análisis.
+  - `ValidationStateEvaluator forbids validated badge and confirms experimental mode`: Comprueba que la UI no tiene autorización para exhibir insignias afirmativas de validación.
+  - `SummaryViewModel defaults and emits isExperimental true`: Verifica reactivamente con un `PracticeSessionHolder` que `SummaryUiState.isExperimental` se mantenga en `true` tras emitir resultados de sesión.
+
+### Test T-F12-03: Verificación Integral de Regresión de Fase F12 (174 tests totales)
+- **Comando:** `bash scripts/verify.sh`
+- **Resultado:** BUILD SUCCESSFUL (174/174 tests unitarios en verde, 0 incidencias Detekt, 0 violaciones ktlint, assembleDebug OK).
+- **Desglose de pruebas unitarias:**
+  - `:analysis`: 101 pruebas unitarias (100% pasando).
+  - `:app`: 73 pruebas unitarias (100% pasando).
+  - Total: 174 pruebas unitarias.
+
 
 
 
