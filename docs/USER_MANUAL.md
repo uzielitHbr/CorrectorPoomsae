@@ -75,3 +75,4 @@ Para asegurar una detección articular precisa y estable con la cámara:
 - **Privacidad y Borrado Total:**
   - La aplicación **no cuenta con permiso de acceso a internet**; tus videos e imágenes jamás salen de tu dispositivo.
   - Desde Ajustes > Zona de riesgo, puedes seleccionar **«Borrado total de datos»** para destruir de forma inmediata e irreversible todas tus prácticas, capturas y preferencias guardadas.
+

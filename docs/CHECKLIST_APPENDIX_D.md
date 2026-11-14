@@ -142,3 +142,4 @@
 - [x] **F-10:** Firma de producción con clave privada del usuario documentada formalmente como Pendiente Externo.
 - [x] **F-11:** Suite completa de pruebas unitarias (174/174) y suite de verificación local `bash scripts/verify.sh` en verde sin regresiones.
 - [x] **F-12:** Etiqueta Git `v1.0.0` creada en la rama `main`.
+
